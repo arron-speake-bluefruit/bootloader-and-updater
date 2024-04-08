@@ -1,8 +1,5 @@
 # Project setup
 
-Set up:
-- CMSIS-driven application
-- CMake build system
 - Program & debug (gdb & vscode) support
 
 # Event loop
@@ -62,3 +59,9 @@ Somehow, report the action taken by the bootloader to the application. One of:
 - typical - normal boot process
 - updated - successfully updated the application image
 - bad checksum - acknowledged update request, refused because of bad image checksum
+
+# Weak-linking for vector table
+
+Allow users of the startup driver to override the default hardfault handler for unconfigured interrupts.
+
+Currently, the execption vectors are hardcoded and have to be updated explicitly.
