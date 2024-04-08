@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Application",
+            "cwd": "${workspaceFolder}",
+            "executable": "./build/application/application",
+            "request": "launch",
+            "type": "cortex-debug",
+            "runToEntryPoint": "main",
+            "servertype": "openocd",
+            "configFiles": [
+                "./debug/openocd.cfg"
+            ],
+        }
+    ]
+}

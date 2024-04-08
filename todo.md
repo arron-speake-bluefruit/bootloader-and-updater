@@ -1,7 +1,3 @@
-# Project setup
-
-- Program & debug (gdb & vscode) support
-
 # Event loop
 
 Set up a minimal busy-waiting main event loop, with code support for adding new event types.
