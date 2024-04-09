@@ -14,4 +14,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     C_EXTENSIONS Off
 )
 
-target_link_libraries(${PROJECT_NAME} startup)
+target_link_libraries(${PROJECT_NAME}
+    startup
+    rcc
+)
