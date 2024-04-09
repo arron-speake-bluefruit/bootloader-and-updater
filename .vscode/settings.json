@@ -1,0 +1,5 @@
+{
+    "cmake.configureEnvironment": {
+        "CMAKE_TOOLCHAIN_FILE": "toolchain.cmake"
+    },
+}

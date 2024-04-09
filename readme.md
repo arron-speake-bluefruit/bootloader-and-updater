@@ -21,18 +21,15 @@ To program and debug compiled artifacts:
 To perform a debug build, run `./build.sh`. A release build is performed by `./build.sh --release`.
 The build script handles both CMake configuration and building.
 
-Alternatively, run:
-```
-CMAKE_TOOLCHAIN_FILE=toolchain.cmake cmake -S . -B <BUILD_DIR> "-DCMAKE_BUILD_TYPE=<CMAKE_BUILD_TYPE>"
-cmake --build <BUILD_DIR> --parallel
-```
-Where `<BUILD_DIR>` is the output directory, and `<CMAKE_BUILD_TYPE>` is `Debug` or `Release`.
+In VSCode, you should be able to use the CMake Tools extension to configure CMake by running the
+`CMake: Configure` command. To build, do `F7` or run `CMake: Build`.
 
-This produces library and executable artifacts in the build directory.
+This produces library and executable artifacts in the build directory. You should be able to use
+either build method interchangeably.
 
 ## Debugging
 
-Debugging can be performed in the terminal using GDB, or graphically with vscode.
+Debugging can be performed in the terminal using GDB, or graphically with VSCode.
 
 Debug setup is for an STM32F0DISCOVERY board, via its ST-LINK USB port.
 
