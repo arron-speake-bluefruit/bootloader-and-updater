@@ -39,10 +39,22 @@ void usart_set_usartdiv(usart_t usart, uint16_t usartdiv) {
 
 void usart_enable(usart_t usart) {
     volatile uint32_t* cr1 = get_register(usart, USART_CR1_OFFSET);
+    uint32_t bits = (1 << USART_CR1_UE_BIT) | (1 << USART_CR1_RE_BIT) | (1 << USART_CR1_TE_BIT);
 
     CRITICAL_SECTION_ENTER();
     uint32_t value = *cr1;
-    value |= (1 << USART_CR1_UE_BIT) | (1 << USART_CR1_RE_BIT) | (1 << USART_CR1_TE_BIT);
+    value |= bits;
+    *cr1 = value;
+    CRITICAL_SECTION_EXIT();
+}
+
+void usart_disable(usart_t usart) {
+    volatile uint32_t* cr1 = get_register(usart, USART_CR1_OFFSET);
+    uint32_t bits = (1 << USART_CR1_UE_BIT) | (1 << USART_CR1_RE_BIT) | (1 << USART_CR1_TE_BIT);
+
+    CRITICAL_SECTION_ENTER();
+    uint32_t value = *cr1;
+    value &= ~bits;
     *cr1 = value;
     CRITICAL_SECTION_EXIT();
 }

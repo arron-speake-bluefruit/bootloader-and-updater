@@ -5,7 +5,7 @@
 void main(void) {
     // Enable clocks for USART2 and the I/O port with the USART2 TX and RX pins.
     rcc_apb1_usart2_enable();
-    rcc_ahb_iopa_en();
+    rcc_ahb_iopa_enable();
 
     // Configure the USART RX/TX pins to the correct alternative function.
     gpio_set_mode(gpio_a, 2, gpio_mode_alternative);

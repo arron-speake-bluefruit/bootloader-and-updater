@@ -23,6 +23,9 @@ void usart_set_usartdiv(usart_t usart, uint16_t usartdiv);
 // Enable `usart`, as well as its transmitter and receiver.
 void usart_enable(usart_t usart);
 
+// Disable `usart`, as well as its transmitter and receiver.
+void usart_disable(usart_t usart);
+
 // Returns true if the transmit register for `usart` is empty. False otherwise.
 bool usart_transmit_register_is_empty(usart_t usart);
 

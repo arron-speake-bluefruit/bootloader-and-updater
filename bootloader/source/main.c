@@ -45,7 +45,7 @@ static void boot_to_application(void) {
 void main(void) {
     // Enable clocks for USART2 and the I/O port with the USART2 TX and RX pins.
     rcc_apb1_usart2_enable();
-    rcc_ahb_iopa_en();
+    rcc_ahb_iopa_enable();
 
     // Configure the USART RX/TX pins to the correct alternative function.
     gpio_set_mode(gpio_a, 2, gpio_mode_alternative);
@@ -74,6 +74,11 @@ void main(void) {
 
     // Wait until USART2 has finished transmitting.
     while (!usart_tranmission_complete(usart2)) {}
+
+    // Turn the peripherals off before booting to the application.
+    usart_disable(usart2);
+    rcc_ahb_iopa_disable();
+    rcc_apb1_usart2_disable();
 
     boot_to_application();
 

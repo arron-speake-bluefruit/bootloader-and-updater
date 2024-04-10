@@ -36,13 +36,13 @@
 #define RCC_AHBENR_IOPAEN_BIT 17
 #define RCC_AHBENR_IOPCEN_BIT 19
 
-void rcc_ahb_iopa_en(void) {
+void rcc_ahb_iopa_enable(void) {
     CRITICAL_SECTION_ENTER();
     *RCC_AHBENR |= 1 << RCC_AHBENR_IOPAEN_BIT;
     CRITICAL_SECTION_EXIT();
 }
 
-void rcc_ahb_iopc_en(void) {
+void rcc_ahb_iopc_enable(void) {
     CRITICAL_SECTION_ENTER();
     *RCC_APB2ENR |= 1 << RCC_AHBENR_IOPCEN_BIT;
     CRITICAL_SECTION_EXIT();
@@ -57,5 +57,17 @@ void rcc_apb2_usart1_enable(void) {
 void rcc_apb1_usart2_enable(void) {
     CRITICAL_SECTION_ENTER();
     *RCC_APB1ENR |= 1 << RCC_APB1ENR_USART2EN_BIT;
+    CRITICAL_SECTION_EXIT();
+}
+
+void rcc_ahb_iopa_disable(void) {
+    CRITICAL_SECTION_ENTER();
+    *RCC_AHBENR &= ~(1 << RCC_AHBENR_IOPAEN_BIT);
+    CRITICAL_SECTION_EXIT();
+}
+
+void rcc_apb1_usart2_disable(void) {
+    CRITICAL_SECTION_ENTER();
+    *RCC_APB1ENR |= ~(1 << RCC_APB1ENR_USART2EN_BIT);
     CRITICAL_SECTION_EXIT();
 }
