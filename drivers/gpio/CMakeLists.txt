@@ -1,7 +1,7 @@
-project(rcc)
+project(gpio)
 
 add_library(${PROJECT_NAME} OBJECT
-    "${PROJECT_SOURCE_DIR}/rcc.c"
+    "${PROJECT_SOURCE_DIR}/gpio.c"
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC

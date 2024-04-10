@@ -1,7 +1,11 @@
-project(application)
+project(usart)
 
-add_executable("${PROJECT_NAME}"
-    "${PROJECT_SOURCE_DIR}/source/main.c"
+add_library(${PROJECT_NAME} OBJECT
+    "${PROJECT_SOURCE_DIR}/usart.c"
+)
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+    "${PROJECT_SOURCE_DIR}/include"
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE
@@ -15,8 +19,5 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 target_link_libraries(${PROJECT_NAME}
-    startup
-    gpio
-    rcc
-    usart
+    critical_section
 )

@@ -22,13 +22,40 @@
 #define RCC_CR2_OFFSET ((uintptr_t)0x34)
 
 // Register addresses
+#define RCC_AHBENR (volatile uint32_t*)(RCC_BASE_ADDRESS + RCC_AHBENR_OFFSET)
 #define RCC_APB2ENR (volatile uint32_t*)(RCC_BASE_ADDRESS + RCC_APB2ENR_OFFSET)
+#define RCC_APB1ENR (volatile uint32_t*)(RCC_BASE_ADDRESS + RCC_APB1ENR_OFFSET)
 
-// RCC APB2ENR Bit names
+// RCC APB2ENR bit names
 #define RCC_APB2ENR_USART1EN_BIT 14
 
+// RCC APB1ENR bit names
+#define RCC_APB1ENR_USART2EN_BIT 17
+
+// RCC AHBENR bit names
+#define RCC_AHBENR_IOPAEN_BIT 17
+#define RCC_AHBENR_IOPCEN_BIT 19
+
+void rcc_ahb_iopa_en(void) {
+    CRITICAL_SECTION_ENTER();
+    *RCC_AHBENR |= 1 << RCC_AHBENR_IOPAEN_BIT;
+    CRITICAL_SECTION_EXIT();
+}
+
+void rcc_ahb_iopc_en(void) {
+    CRITICAL_SECTION_ENTER();
+    *RCC_APB2ENR |= 1 << RCC_AHBENR_IOPCEN_BIT;
+    CRITICAL_SECTION_EXIT();
+}
+
 void rcc_apb2_usart1_enable(void) {
-    uint32_t apb2enr = *RCC_APB2ENR;
-    apb2enr |= 1 << RCC_APB2ENR_USART1EN_BIT;
-    *RCC_APB2ENR = apb2enr;
+    CRITICAL_SECTION_ENTER();
+    *RCC_APB2ENR |= 1 << RCC_APB2ENR_USART1EN_BIT;
+    CRITICAL_SECTION_EXIT();
+}
+
+void rcc_apb1_usart2_enable(void) {
+    CRITICAL_SECTION_ENTER();
+    *RCC_APB1ENR |= 1 << RCC_APB1ENR_USART2EN_BIT;
+    CRITICAL_SECTION_EXIT();
 }
