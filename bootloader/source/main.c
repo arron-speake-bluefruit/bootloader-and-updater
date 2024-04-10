@@ -8,23 +8,39 @@
 // Copy the application's vector table from the start of its image into SRAM so it is read afer
 // a reset-to-SRAM.
 static void copy_application_vectors_to_sram(void) {
-    // Linker-defined symbols. These don't refer to anything coherent, and shouldn't be read, only
-    // pointed to.
-    extern const uint32_t _application_start;
-    extern uint32_t sram_base; // TODO: put it in the linkerrrrrr
+    extern const uint32_t APPLICATION_ORIGIN;
+    extern uint32_t _app_vectors[];
 
-    const uint32_t* application_ptr = &application;
-    uint32_t* sram_base = &sram_base;
+    const size_t vector_table_length = 48;
+    const size_t vector_table_size = sizeof(uint32_t) * vector_table_length;
 
-    enum { vector_table_size = sizeof(uint32_t) * 1 }; // TODO: Use correct value.
+    memcpy(_app_vectors, &APPLICATION_ORIGIN, vector_table_size);
+}
 
-    memcpy(sram_base, application_ptr, vector_table_size);
+
+static void jump_to_application_reset_handler(void) {
+    extern uint32_t _app_vectors[];
+
+    uint32_t stack_pointer = _app_vectors[0];
+    uint32_t reset_handler_vector = _app_vectors[1];
+    uint32_t link_register = 0xFFFFFFFF;
+
+    // Unfortunately, a little assembly is required for this.
+    // This places `stack_pointer` into the SP register, resets the link register, and then jumps
+    // to `reset_handler_vector`.
+    __asm__ (
+        "mov sp, %0\n"
+        "mov lr, %1\n"
+        "bx %2\n"
+        :
+        : "r" (stack_pointer), "r" (link_register), "r" (reset_handler_vector)
+    );
 }
 
 static void boot_to_application(void) {
     copy_application_vectors_to_sram();
     syscfg_set_mem_mode(syscfg_mem_mode_sram);
-    scb_request_system_reset(SYSCFG_AIRCR_VECTKEY);
+    jump_to_application_reset_handler();
 }
 
 void main(void) {

@@ -5,6 +5,7 @@ option(BUILD_STANDALONE "If enable, build the application using standalone start
 
 add_subdirectory(application)
 add_subdirectory(bootloader)
+# TODO: Make drivers/ a single subproject, let -ffunction-sections do the work
 add_subdirectory(drivers/critical_section)
 add_subdirectory(drivers/gpio)
 add_subdirectory(drivers/linker_script_application)
