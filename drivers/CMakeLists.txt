@@ -1,7 +1,11 @@
-project(scb)
+project(drivers)
 
 add_library(${PROJECT_NAME} OBJECT
-    "${PROJECT_SOURCE_DIR}/scb.c"
+    "${PROJECT_SOURCE_DIR}/source/gpio.c"
+    "${PROJECT_SOURCE_DIR}/source/rcc.c"
+    "${PROJECT_SOURCE_DIR}/source/scb.c"
+    "${PROJECT_SOURCE_DIR}/source/syscfg.c"
+    "${PROJECT_SOURCE_DIR}/source/usart.c"
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC

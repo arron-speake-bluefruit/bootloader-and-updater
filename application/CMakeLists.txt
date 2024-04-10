@@ -21,10 +21,7 @@ else()
 endif()
 
 target_link_libraries(${PROJECT_NAME}
-    gpio
-    rcc
-    scb
+    drivers
     startup
-    usart
     ${APPLICATION_LINKER_PROJECT}
 )

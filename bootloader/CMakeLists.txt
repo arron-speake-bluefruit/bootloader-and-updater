@@ -15,11 +15,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 target_link_libraries(${PROJECT_NAME}
+    drivers
     startup
-    gpio
     linker_script_bootloader
-    rcc
-    usart
-    scb
-    syscfg
 )
