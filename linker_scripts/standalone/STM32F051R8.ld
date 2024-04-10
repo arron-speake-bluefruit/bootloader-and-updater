@@ -1,11 +1,7 @@
-STACK_SIZE = 0x1000;
-
 MEMORY {
     FLASH (rx) : ORIGIN = 0x08000000, LENGTH = 64k
     RAM (rw) : ORIGIN =  0x20000000, LENGTH = 8k
 }
-
-ENTRY(reset_handler);
 
 SECTIONS {
     .text : {
