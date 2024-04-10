@@ -30,14 +30,6 @@ Otherwise, use software checksum.
 
 Application settable, bootloader resettable flag for performing an update on reset.
 
-# Bootloader
-
-Modify build setup to:
-- Produce minimal (compile-time configurable) bootloader.
-- Set base address of application to a fixed offset (boot address).
-
-Add a bootloader binary which immediately resets onto the application image.
-
 # Updating bootloader
 
 Modify the bootloader to:

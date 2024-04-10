@@ -17,7 +17,6 @@ static void copy_application_vectors_to_sram(void) {
     memcpy(_app_vectors, &APPLICATION_ORIGIN, vector_table_size);
 }
 
-
 static void jump_to_application_reset_handler(void) {
     extern uint32_t _app_vectors[];
 
