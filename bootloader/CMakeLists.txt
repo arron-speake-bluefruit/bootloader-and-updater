@@ -1,4 +1,4 @@
-project(application)
+project(bootloader)
 
 add_executable("${PROJECT_NAME}"
     "${PROJECT_SOURCE_DIR}/source/main.c"
@@ -14,17 +14,12 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     C_EXTENSIONS Off
 )
 
-if(${BUILD_STANDALONE})
-    set(APPLICATION_LINKER_PROJECT linker_script_standalone)
-else()
-    set(APPLICATION_LINKER_PROJECT linker_script_application)
-endif()
-
 target_link_libraries(${PROJECT_NAME}
-    gpio
-    rcc
-    scb
     startup
+    gpio
+    linker_script_bootloader
+    rcc
     usart
-    ${APPLICATION_LINKER_PROJECT}
+    scb
+    syscfg
 )

@@ -21,6 +21,7 @@
 
 // USART ISR bit names
 #define USART_ISR_TXE_BIT 7
+#define USART_ISR_TC_BIT 6
 
 static volatile uint32_t* get_register(usart_t usart, uintptr_t register_offset) {
     return (volatile uint32_t*)((uintptr_t)usart + register_offset);
@@ -49,6 +50,11 @@ void usart_enable(usart_t usart) {
 bool usart_transmit_register_is_empty(usart_t usart) {
     volatile uint32_t* isr = get_register(usart, USART_ISR_OFFSET);
     return ((*isr >> USART_ISR_TXE_BIT) & 1) == 1;
+}
+
+bool usart_tranmission_complete(usart_t usart) {
+    volatile uint32_t* isr = get_register(usart, USART_ISR_OFFSET);
+    return ((*isr >> USART_ISR_TC_BIT) & 1) == 1;
 }
 
 void usart_write(usart_t usart, uint8_t byte) {

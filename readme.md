@@ -44,3 +44,5 @@ Then, run `arm-none-eabi-gdb -x debug/gdb.cfg` to attach the debugger.
 
 Using the recommended `cortex-debug` extension, use the "Debug Application" launch task to begin a
 debug session.
+
+TODO: VSCode debugging might be broken with build-configurable linker scripts now. Check!
