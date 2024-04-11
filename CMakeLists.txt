@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 project("bootloader-and-updater" VERSION 0.1.0 LANGUAGES C)
 
-option(BUILD_STANDALONE "If enable, build the application using standalone startup code." Off)
+option(BUILD_STANDALONE "Build the application using standalone startup code." Off)
 
 add_subdirectory(application)
 add_subdirectory(bootloader)

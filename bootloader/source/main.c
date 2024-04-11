@@ -55,7 +55,7 @@ void main(void) {
 
     // Configure USART2's baud rate.
     const uint32_t clock_frequency = 8 * 1000 * 1000;
-    const uint32_t target_baud_rate = 9600;
+    const uint32_t target_baud_rate = 38400;
     const uint16_t usart_clock_div = (uint16_t)(clock_frequency / target_baud_rate);
     usart_set_usartdiv(usart2, usart_clock_div);
 
