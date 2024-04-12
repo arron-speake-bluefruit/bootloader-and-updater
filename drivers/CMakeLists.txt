@@ -2,6 +2,7 @@ project(drivers)
 
 add_library(${PROJECT_NAME} OBJECT
     "${PROJECT_SOURCE_DIR}/source/gpio.c"
+    "${PROJECT_SOURCE_DIR}/source/nvic.c"
     "${PROJECT_SOURCE_DIR}/source/rcc.c"
     "${PROJECT_SOURCE_DIR}/source/scb.c"
     "${PROJECT_SOURCE_DIR}/source/syscfg.c"
