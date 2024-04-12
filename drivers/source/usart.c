@@ -18,6 +18,7 @@
 #define USART_CR1_UE_BIT 0
 #define USART_CR1_RE_BIT 2
 #define USART_CR1_TE_BIT 3
+#define USART_CR1_RXNEIE_BIT 5
 
 // USART ISR bit names
 #define USART_ISR_TXE_BIT 7
@@ -75,4 +76,17 @@ void usart_write(usart_t usart, uint8_t byte) {
     volatile uint32_t* tdr = get_register(usart, USART_TDR_OFFSET);
 
     *tdr = (uint32_t)byte;
+}
+
+uint8_t usart_read(usart_t usart) {
+    volatile uint32_t* rdr = get_register(usart, USART_RDR_OFFSET);
+    return (uint8_t)*rdr;
+}
+
+void usart_enable_receive_callback(usart_t usart) {
+    volatile uint32_t* cr1 = get_register(usart, USART_CR1_OFFSET);
+
+    CRITICAL_SECTION_ENTER();
+    *cr1 |= 1 << USART_CR1_RXNEIE_BIT;
+    CRITICAL_SECTION_EXIT();
 }

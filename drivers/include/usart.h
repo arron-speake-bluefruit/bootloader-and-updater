@@ -36,4 +36,12 @@ bool usart_tranmission_complete(usart_t usart);
 // transmitter is enabled, and when the register is empty.
 void usart_write(usart_t usart, uint8_t byte);
 
+// Read a byte from the given usart peripheral. If there is no byte to be read, returns an
+// undefined value.
+uint8_t usart_read(usart_t usart);
+
+// Enable the RXNE callback for the given USART. Triggers the USARTx global interrupt whenever its
+// receive buffer is not empty.
+void usart_enable_receive_callback(usart_t usart);
+
 #endif // DRIVERS_USART_H

@@ -48,8 +48,38 @@ Somehow, report the action taken by the bootloader to the application. One of:
 - updated - successfully updated the application image
 - bad checksum - acknowledged update request, refused because of bad image checksum
 
-# Weak-linking for vector table
+events:
+- driver
+  - usart_rx (byte)
+  - usart_rx_failed (error data)
+- component
+  - command_parsed (command data)
+  - command_parse_failed (error data)
+  - command_dispatch_failed (error data)
 
-Allow users of the startup driver to override the default hardfault handler for unconfigured interrupts.
-
-Currently, the execption vectors are hardcoded and have to be updated explicitly.
+components:
+- command parser, parses user inputs into commands via USART-RX
+  - receives usart_rx events
+  - receives usart_rx_failed events
+  - produces command_parsed events
+  - produces command_parse_failed events
+- command dispatcher, converts parsed inputs into MORE EVENTS
+  - receives command_parsed events
+  - produces events for commands (start update, cancel update, update packet, )
+    - update_collect_start
+    - update_collect_packet
+    - update_collect_cancel
+    - apply_update
+    - reboot
+    - version
+  - produces command_dispatch_failed events
+- reporter, reports errors and stuff to the user via USART-TX
+  - produces command_parse_failed events
+  - produces command_dispatch_failed events
+- updater
+  - receives update_collect_start events (expected payload size)
+  - receives update_collect_packet events (packet Id, payload)
+  - receives update_collect_cancel events
+  - TODO: request missing packets?
+  - produces update_cancelled events
+  - produces update_ready events

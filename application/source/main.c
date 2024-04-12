@@ -1,6 +1,8 @@
 #include "gpio.h"
 #include "rcc.h"
 #include "usart.h"
+#include "vector_table.h"
+#include "nvic.h"
 
 // Change the system clock to the PLL, from 8Mhz to 48MHz.
 static void switch_system_clock(void) {
@@ -14,6 +16,11 @@ static void switch_system_clock(void) {
     while (!rcc_pll_clock_ready()) {}
 
     rcc_switch_system_clock(rcc_system_clock_pll);
+}
+
+static void handle_usart2_read(void) {
+    uint8_t byte = usart_read(usart2);
+    usart_write(usart2, byte);
 }
 
 void main(void) {
@@ -35,8 +42,12 @@ void main(void) {
     const uint16_t usart_clock_div = (uint16_t)(clock_frequency / target_baud_rate);
     usart_set_usartdiv(usart2, usart_clock_div);
 
+    vector_table_set(vector_table_index_usart2, handle_usart2_read);
+    nvic_enable_usart2_global_interrupt();
+
     // Enable USART2.
     usart_enable(usart2);
+    usart_enable_receive_callback(usart2);
 
     // Write a welcome message.
     const char* const message = "Hello, world.\n";
