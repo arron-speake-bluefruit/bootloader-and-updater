@@ -2,10 +2,15 @@ project(application)
 
 add_executable("${PROJECT_NAME}"
     "${PROJECT_SOURCE_DIR}/source/main.c"
+    "${PROJECT_SOURCE_DIR}/source/vector_table.c"
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE
     "-Wall" "-Wextra" "-Wpedantic"
+)
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+    "${PROJECT_SOURCE_DIR}/include"
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
