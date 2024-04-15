@@ -68,3 +68,11 @@ Using the recommended `cortex-debug` extension, use the "Debug Application" laun
 to begin a debug session. This should run the built standalone debug application.
 
 There is no current setup for debugging the bootloader inside VSCode.
+
+## Testing
+
+A single CMake build directory is unable to handle multiple compiler toolchains at once, so the
+test project is contained inside its own CMake project with its own build directory.
+
+To build and run tests, do `./test.sh`. Passing the `--no-run` flag will only perform the build
+step.

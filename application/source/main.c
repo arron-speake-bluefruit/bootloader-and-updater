@@ -3,6 +3,15 @@
 #include "usart.h"
 #include "vector_table.h"
 #include "nvic.h"
+#include "command_parser.h"
+
+static void on_command_error(command_parser_error_t error) {
+    (void)error;
+}
+
+static void on_command_finish(const char* command) {
+    (void)command;
+}
 
 // Change the system clock to the PLL, from 8Mhz to 48MHz.
 static void switch_system_clock(void) {
@@ -44,6 +53,8 @@ void main(void) {
 
     vector_table_set(vector_table_index_usart2, handle_usart2_read);
     nvic_enable_usart2_global_interrupt();
+
+    command_parser_initialize(on_command_error, on_command_finish);
 
     // Enable USART2.
     usart_enable(usart2);

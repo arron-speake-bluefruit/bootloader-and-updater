@@ -1,6 +1,7 @@
 project(application)
 
 add_executable("${PROJECT_NAME}"
+    "${PROJECT_SOURCE_DIR}/source/command_parser.c"
     "${PROJECT_SOURCE_DIR}/source/main.c"
     "${PROJECT_SOURCE_DIR}/source/vector_table.c"
 )
