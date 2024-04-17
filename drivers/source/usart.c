@@ -18,11 +18,16 @@
 #define USART_CR1_UE_BIT 0
 #define USART_CR1_RE_BIT 2
 #define USART_CR1_TE_BIT 3
+#define USART_CR1_IDLEIE_BIT 4
 #define USART_CR1_RXNEIE_BIT 5
 
 // USART ISR bit names
-#define USART_ISR_TXE_BIT 7
+#define USART_ISR_RXNE_BIT 5
 #define USART_ISR_TC_BIT 6
+#define USART_ISR_TXE_BIT 7
+
+// USART ICR bit names
+#define USART_ICD_IDLECF_BIT 4
 
 static volatile uint32_t* get_register(usart_t usart, uintptr_t register_offset) {
     return (volatile uint32_t*)((uintptr_t)usart + register_offset);
@@ -83,10 +88,30 @@ uint8_t usart_read(usart_t usart) {
     return (uint8_t)*rdr;
 }
 
-void usart_enable_receive_callback(usart_t usart) {
+bool usart_can_read(usart_t usart) {
+    volatile uint32_t* isr = get_register(usart, USART_ISR_OFFSET);
+    return ((*isr >> USART_ISR_RXNE_BIT) & 1) == 1;
+}
+
+void usart_enable_receive_interrupt(usart_t usart) {
     volatile uint32_t* cr1 = get_register(usart, USART_CR1_OFFSET);
 
     CRITICAL_SECTION_ENTER();
     *cr1 |= 1 << USART_CR1_RXNEIE_BIT;
     CRITICAL_SECTION_EXIT();
+}
+
+void usart_enable_idle_interrupt(usart_t usart) {
+    volatile uint32_t* cr1 = get_register(usart, USART_CR1_OFFSET);
+
+    CRITICAL_SECTION_ENTER();
+    *cr1 |= 1 << USART_CR1_IDLEIE_BIT;
+    CRITICAL_SECTION_EXIT();
+}
+
+void usart_clear_idle_line(usart_t usart) {
+    volatile uint32_t* icr = get_register(usart, USART_ICR_OFFSET);
+
+    // Writing 0s to this register has no effect, so do a direct write.
+    *icr = (1 << USART_ICD_IDLECF_BIT);
 }

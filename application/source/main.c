@@ -1,9 +1,10 @@
 #include "gpio.h"
 #include "rcc.h"
 #include "usart.h"
-#include "vector_table.h"
 #include "nvic.h"
+#include "vector_table.h"
 #include "command_parser.h"
+#include "ringbuffer.h"
 
 static void on_command_error(command_parser_error_t error) {
     (void)error;
@@ -27,9 +28,16 @@ static void switch_system_clock(void) {
     rcc_switch_system_clock(rcc_system_clock_pll);
 }
 
-static void handle_usart2_read(void) {
-    uint8_t byte = usart_read(usart2);
-    usart_write(usart2, byte);
+static void usart2_global_interrupt(void) {
+    if (usart_can_read(usart2)) {
+        // Read interrupt.
+        uint8_t byte = usart_read(usart2);
+        usart_write(usart2, byte);
+    } else {
+        // Only other enable interrupt is IDLE.
+        usart_clear_idle_line(usart2);
+        usart_write(usart2, '@');
+    }
 }
 
 void main(void) {
@@ -51,14 +59,15 @@ void main(void) {
     const uint16_t usart_clock_div = (uint16_t)(clock_frequency / target_baud_rate);
     usart_set_usartdiv(usart2, usart_clock_div);
 
-    vector_table_set(vector_table_index_usart2, handle_usart2_read);
+    vector_table_set(vector_table_index_usart2, usart2_global_interrupt);
     nvic_enable_usart2_global_interrupt();
 
     command_parser_initialize(on_command_error, on_command_finish);
 
     // Enable USART2.
     usart_enable(usart2);
-    usart_enable_receive_callback(usart2);
+    usart_enable_receive_interrupt(usart2);
+    usart_enable_idle_interrupt(usart2);
 
     // Write a welcome message.
     const char* const message = "Hello, world.\n";

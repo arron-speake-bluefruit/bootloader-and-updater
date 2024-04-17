@@ -40,8 +40,18 @@ void usart_write(usart_t usart, uint8_t byte);
 // undefined value.
 uint8_t usart_read(usart_t usart);
 
-// Enable the RXNE callback for the given USART. Triggers the USARTx global interrupt whenever its
+// Return true if a byte can be read from the USART read register, false otherwise.
+bool usart_can_read(usart_t usart);
+
+// Enable the RXNE interrupt for the given USART. Triggers the USARTx global interrupt whenever its
 // receive buffer is not empty.
-void usart_enable_receive_callback(usart_t usart);
+void usart_enable_receive_interrupt(usart_t usart);
+
+// Enable the IDLE interrupt for the given USART. Triggers the USARTx global interrupt whenever the
+// RX line goes idle.
+void usart_enable_idle_interrupt(usart_t usart);
+
+// Clear the IDLE interrupt flag for the given USART.
+void usart_clear_idle_line(usart_t usart);
 
 #endif // DRIVERS_USART_H
