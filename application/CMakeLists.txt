@@ -4,6 +4,7 @@ add_executable("${PROJECT_NAME}"
     "${PROJECT_SOURCE_DIR}/source/command_parser.c"
     "${PROJECT_SOURCE_DIR}/source/event_queue.c"
     "${PROJECT_SOURCE_DIR}/source/main.c"
+    "${PROJECT_SOURCE_DIR}/source/ringbuffer.c"
     "${PROJECT_SOURCE_DIR}/source/vector_table.c"
 )
 

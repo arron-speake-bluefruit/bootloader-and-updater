@@ -7,6 +7,7 @@ enable_testing()
 set(tests
     application_command_parser
     application_event_queue
+    application_ringbuffer
 )
 
 # Definitions of test sources & include directories
@@ -22,6 +23,13 @@ set(application_event_queue_sources
     "../application/source/event_queue.c"
 )
 set(application_event_queue_includes
+    "../application/include"
+)
+
+set(application_ringbuffer_sources
+    "../application/source/ringbuffer.c"
+)
+set(application_ringbuffer_includes
     "../application/include"
 )
 
