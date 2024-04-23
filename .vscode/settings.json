@@ -2,7 +2,4 @@
     "cmake.configureEnvironment": {
         "CMAKE_TOOLCHAIN_FILE": "toolchain.cmake"
     },
-    "cmake.configureSettings": {
-        "BUILD_STANDALONE": "On"
-    },
 }

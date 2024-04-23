@@ -22,16 +22,10 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     C_EXTENSIONS Off
 )
 
-if(${BUILD_STANDALONE})
-    set(APPLICATION_LINKER_PROJECT linker_script_standalone)
-else()
-    set(APPLICATION_LINKER_PROJECT linker_script_application)
-endif()
-
 target_link_libraries(${PROJECT_NAME}
     drivers
+    linker_script_application
     startup
-    ${APPLICATION_LINKER_PROJECT}
 )
 
 add_custom_target("${PROJECT_NAME}.bin" ALL
