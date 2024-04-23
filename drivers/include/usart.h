@@ -54,4 +54,10 @@ void usart_enable_idle_interrupt(usart_t usart);
 // Clear the IDLE interrupt flag for the given USART.
 void usart_clear_idle_line(usart_t usart);
 
+// Enable the given USART's TXE interrupt.
+void usart_enable_transmit_empty_interrupt(usart_t usart);
+
+// Disable the given USART's TXE interrupt.
+void usart_disable_transmit_empty_interrupt(usart_t usart);
+
 #endif // DRIVERS_USART_H

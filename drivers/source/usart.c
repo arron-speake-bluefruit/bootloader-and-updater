@@ -20,6 +20,7 @@
 #define USART_CR1_TE_BIT 3
 #define USART_CR1_IDLEIE_BIT 4
 #define USART_CR1_RXNEIE_BIT 5
+#define USART_CR1_TXEIE_BIT 7
 
 // USART ISR bit names
 #define USART_ISR_RXNE_BIT 5
@@ -114,4 +115,20 @@ void usart_clear_idle_line(usart_t usart) {
 
     // Writing 0s to this register has no effect, so do a direct write.
     *icr = (1 << USART_ICD_IDLECF_BIT);
+}
+
+void usart_enable_transmit_empty_interrupt(usart_t usart) {
+    volatile uint32_t* cr1 = get_register(usart, USART_CR1_OFFSET);
+
+    CRITICAL_SECTION_ENTER();
+    *cr1 |= 1 << USART_CR1_TXEIE_BIT;
+    CRITICAL_SECTION_EXIT();
+}
+
+void usart_disable_transmit_empty_interrupt(usart_t usart) {
+    volatile uint32_t* cr1 = get_register(usart, USART_CR1_OFFSET);
+
+    CRITICAL_SECTION_ENTER();
+    *cr1 &= ~(1 << USART_CR1_TXEIE_BIT);
+    CRITICAL_SECTION_EXIT();
 }
