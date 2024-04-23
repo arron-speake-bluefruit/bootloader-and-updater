@@ -6,13 +6,32 @@
 #include "vector_table.h"
 #include "command_parser.h"
 #include "ringbuffer.h"
+#include <string.h>
+
+typedef struct event {
+    bool is_error;
+
+    union {
+        command_parser_error_t error;
+        char command[32];
+    };
+} event_t;
+
+static volatile event_t event;
+static volatile bool has_event;
 
 static void on_command_error(command_parser_error_t error) {
-    (void)error;
+    event.is_error = true;
+    event.error = error;
+    has_event = true;
 }
 
 static void on_command_finish(const char* command) {
-    (void)command;
+    size_t length = strlen(command);
+    event.is_error = false;
+    // TODO: There's no bounds-check here.
+    memcpy((void*)event.command, command, length + 1);
+    has_event = true;
 }
 
 // Change the system clock to the PLL, from 8Mhz to 48MHz.
@@ -32,11 +51,10 @@ static void usart2_global_interrupt(void) {
     if (usart_can_read(usart2)) {
         // Read interrupt.
         uint8_t byte = usart_read(usart2);
-        usart_write(usart2, byte);
+        command_parser_push(byte);
     } else {
         // Only other enable interrupt is IDLE.
         usart_clear_idle_line(usart2);
-        usart_write(usart2, '@');
     }
 }
 
@@ -86,5 +104,18 @@ void main(void) {
     // Write a welcome message.
     print("Hello, world.\n");
 
-    while (true) {}
+    while (true) {
+        if (has_event) {
+            has_event = false;
+            if (event.is_error) {
+                print("error: ");
+                print(command_parser_error_as_string(event.error));
+                print("\n");
+            } else {
+                print("command: ");
+                print((const char*)event.command);
+                print("\n");
+            }
+        }
+    }
 }

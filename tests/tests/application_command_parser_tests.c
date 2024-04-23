@@ -85,8 +85,30 @@ static void very_long_input_produces_error(void) {
     ASSERT_EQUAL(error_callback_input, command_parser_error_too_long);
 }
 
+static void finished_command_are_terminated_with_zero_byte() {
+    // Given
+    reset_callbacks();
+    command_parser_initialize(error_callback, finished_callback);
+
+    // push and discard characters to fill the internal buffer
+    for (size_t i = 0; i < 100; i++) {
+        command_parser_push('a');
+    }
+    command_parser_push('\n');
+    reset_callbacks();
+
+    // When
+    command_parser_push('b');
+    command_parser_push('\n');
+
+    // Then
+    ASSERT_EQUAL(finished_callback_call_count, 1);
+    ASSERT_STRINGS_EQUAL(finished_callback_input, "b");
+}
+
 int main(void) {
     empty_input_produces_no_callback();
     alphanumeric_input_produces_finished_callback();
     very_long_input_produces_error();
+    finished_command_are_terminated_with_zero_byte();
 }

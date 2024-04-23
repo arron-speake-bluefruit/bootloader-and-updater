@@ -23,10 +23,12 @@ void command_parser_initialize(
 static void handle_newline(void) {
     if (index == 0) {
         // Empty inputs produce no output, do nothing.
-    } else if (index >= buffer_size) {
+    } else if (index >= (buffer_size - 1)) {
+        // Run out of space to push the null terminator for this input, can't emit it.
         on_error(command_parser_error_too_long);
         index = 0;
     } else {
+        buffer[index] = '\0';
         on_finish(buffer);
         index = 0;
     }
@@ -41,5 +43,14 @@ void command_parser_push(char c) {
         // More input. For now, everything is treated as a single string.
         buffer[index] = c;
         index += 1;
+    }
+}
+
+const char* command_parser_error_as_string(command_parser_error_t error) {
+    switch (error) {
+    case command_parser_error_too_long:
+        return "input too long";
+    default:
+        return "?";
     }
 }

@@ -15,4 +15,6 @@ void command_parser_initialize(
 
 void command_parser_push(char c);
 
+const char* command_parser_error_as_string(command_parser_error_t error);
+
 #endif // COMMAND_PARSER_H
