@@ -2,6 +2,7 @@
 #include "rcc.h"
 #include "usart.h"
 #include "nvic.h"
+#include "flash.h"
 #include "vector_table.h"
 #include "command_parser.h"
 #include "ringbuffer.h"
@@ -36,12 +37,108 @@ static void usart2_global_interrupt(void) {
     } else {
         // Only other enable interrupt is IDLE.
         usart_clear_idle_line(usart2);
-        usart_write(usart2, '@');
+        // usart_write(usart2, '@');
     }
 }
 
+static void print(const char* message) {
+    for (const char* c = message; *c != '\0'; c++) {
+        // Busy-wait until the next byte can be transmitted.
+        while (!usart_transmit_register_is_empty(usart2)) {}
+
+        // Transmit the next byte.
+        usart_write(usart2, (uint8_t)*c);
+    }
+}
+
+static void flash_page_erase(uint32_t address) {
+    clear_flash_status();
+
+    // Check that no flash memory operation is ongoing
+    while (flash_is_busy()) {}
+
+    // Set the PER bit in the FLASH_CR register.
+    flash_set_operation(flash_operation_page_erase);
+
+    // Program the FLASH_AR register to select a page to erase.
+    flash_set_address(address);
+
+    // Set the STRT bit in the FLASH_CR register
+    flash_operation_start();
+
+    // Note: The software should start checking if the BSY bit equals “0” at least one CPU cycle
+    // after setting the STRT bit.
+
+    // Wait for the flash operation to finish.
+    bool hit = false;
+    while (!hit) {
+        uint32_t status = flash_status();
+        if ((status & flash_status_bit_busy) == 0) {
+            print("not busy\n");
+            hit = true;
+        } else {
+            if ((status & flash_status_bit_programming_error) != 0) {
+                print("programming error\n");
+                hit = true;
+            }
+
+            if ((status & flash_status_bit_write_protect_error) != 0) {
+                print("write protect error\n");
+                hit = true;
+            }
+
+            if ((status & flash_status_bit_end_of_program) != 0) {
+                print("end of program\n");
+                hit = true;
+            }
+        }
+    }
+}
+
+// Copy `count` halfwords from `source` to `destination`. Destination range MUST all be located inside flash.
+// Before writing, performs an erase of all pages containing the destination range.
+static void flash_overwrite(const uint16_t* source, uint16_t* destination, size_t count) {
+    const uintptr_t page_size_bytes = 1024;
+
+    uintptr_t destination_addr = (uintptr_t)destination;
+    uintptr_t page_addr = (destination_addr / page_size_bytes) * page_size_bytes;
+    uintptr_t page_count = count * 2 / page_size_bytes;
+    uintptr_t end_page_addr = page_addr + (page_count * page_size_bytes);
+
+    for (uintptr_t page = page_addr; page <= end_page_addr; page += page_size_bytes) {
+        flash_page_erase(page);
+        // TODO: Check for failure
+    }
+
+    for (uintptr_t i = 0; i < count; i++) {
+        flash_set_operation(flash_operation_program);
+        destination[i] = source[i];
+        while (flash_is_busy()) {}
+
+        // TODO: Check for failure
+    }
+
+    // TODO: Check for failure
+}
+
+// static void write_nibble(uint8_t n) {
+//     while (!usart_transmit_register_is_empty(usart2)) {}
+
+//     if (n < 10) {
+//         usart_write(usart2, n + '0');
+//     } else if (n < 16) {
+//         usart_write(usart2, n - 10 + 'A');
+//     } else {
+//         usart_write(usart2, '?');
+//     }
+// }
+
 void main(void) {
     switch_system_clock();
+
+    // Configure flash.
+    flash_enable_prefetch();
+    flash_set_latency(flash_latency_one);
 
     // Enable clocks for USART2 and the I/O port with the USART2 TX and RX pins.
     rcc_apb1_usart2_enable();
@@ -70,14 +167,8 @@ void main(void) {
     usart_enable_idle_interrupt(usart2);
 
     // Write a welcome message.
-    const char* const message = "Hello, world.\n";
-    for (const char* c = message; *c != '\0'; c++) {
-        // Busy-wait until the next byte can be transmitted.
-        while (!usart_transmit_register_is_empty(usart2)) {}
-
-        // Transmit the next byte.
-        usart_write(usart2, (uint8_t)*c);
-    }
+    print("I have written a new message here.\n");
+    print("What's up?\n");
 
     while (true) {}
 }
