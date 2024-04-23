@@ -24,3 +24,9 @@ target_link_libraries(${PROJECT_NAME}
     startup
     linker_script_bootloader
 )
+
+add_custom_target("${PROJECT_NAME}.bin" ALL
+    COMMAND ${CMAKE_OBJCOPY} -Obinary "${PROJECT_NAME}" "${PROJECT_NAME}.bin"
+    DEPENDS ${PROJECT_NAME}
+    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+)
