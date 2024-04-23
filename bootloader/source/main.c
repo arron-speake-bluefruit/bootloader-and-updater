@@ -1,42 +1,10 @@
 #include "gpio.h"
 #include "rcc.h"
-#include "scb.h"
-#include "syscfg.h"
 #include "usart.h"
-#include "flash.h"
-#include <string.h>
+#include "flash_copy.h"
+#include "boot.h"
 
-// Copy the application's vector table from the start of its image into SRAM so it is read afer
-// a reset-to-SRAM.
-static void copy_application_vectors_to_sram(void) {
-    extern uint32_t APPLICATION_ORIGIN;
-    extern uint32_t _app_vectors[];
-
-    const size_t vector_table_length = 48;
-    const size_t vector_table_size = sizeof(uint32_t) * vector_table_length;
-
-    memcpy(_app_vectors, &APPLICATION_ORIGIN, vector_table_size);
-}
-
-static void jump_to_application_reset_handler(void) {
-    extern uint32_t _app_vectors[];
-
-    uint32_t stack_pointer = _app_vectors[0];
-    uint32_t reset_handler_vector = _app_vectors[1];
-    uint32_t link_register = 0xFFFFFFFF;
-
-    // Unfortunately, a little assembly is required for this.
-    // This places `stack_pointer` into the SP register, resets the link register, and then jumps
-    // to `reset_handler_vector`.
-    __asm__ (
-        "mov sp, %0\n"
-        "mov lr, %1\n"
-        "bx %2\n"
-        :
-        : "r" (stack_pointer), "r" (link_register), "r" (reset_handler_vector)
-    );
-}
-
+// Print all bytes of `message` into USART2 TX.
 static void print(const char* message) {
     for (const char* c = message; *c != '\0'; c++) {
         // Busy-wait until the next byte can be transmitted.
@@ -47,77 +15,8 @@ static void print(const char* message) {
     }
 }
 
-static void flash_overwrite(const uint16_t* source, uint16_t* destination, size_t count) {
-    const uintptr_t page_size_bytes = 1024;
-
-    // TODO: Make sure this page range calculation is correct.
-    uintptr_t destination_addr = (uintptr_t)destination;
-    uintptr_t page_addr = (destination_addr / page_size_bytes) * page_size_bytes;
-    uintptr_t page_count = count * 2 / page_size_bytes;
-    uintptr_t end_page_addr = page_addr + (page_count * page_size_bytes);
-
-    for (uintptr_t page = page_addr; page < end_page_addr; page += page_size_bytes) {
-        // Check that no flash memory operation is ongoing
-        while (flash_is_busy()) {}
-
-        // Set the PER bit in the FLASH_CR register.
-        flash_set_operation(flash_operation_page_erase);
-
-        // Program the FLASH_AR register to select a page to erase.
-        flash_set_address(page);
-
-        // Set the STRT bit in the FLASH_CR register
-        flash_operation_start();
-
-        // Note: The software should start checking if the BSY bit equals “0” at least one CPU cycle
-        // after setting the STRT bit.
-
-        // Wait for the flash operation to finish.
-        bool hit = false;
-        while (!hit) {
-            uint32_t status = flash_status();
-            if ((status & flash_status_bit_busy) == 0) {
-                print("[bootloader] erased block\n");
-                hit = true;
-            } else {
-                if ((status & flash_status_bit_programming_error) != 0) {
-                    print("[bootloader] programming error during erase\n");
-                    hit = true;
-                }
-
-                if ((status & flash_status_bit_write_protect_error) != 0) {
-                    print("[bootloader] write protect error during erase\n");
-                    hit = true;
-                }
-
-                if ((status & flash_status_bit_end_of_program) != 0) {
-                    print("[bootloader] end of program during erase\n");
-                    hit = true;
-                }
-            }
-        }
-        // TODO: Proper error handling.
-    }
-
-    print("[bootloader] writing...\n");
-    for (uintptr_t i = 0; i < count; i++) {
-        flash_set_operation(flash_operation_program);
-        destination[i] = source[i];
-        while (flash_is_busy()) {}
-
-        // TODO: Check for failure
-    }
-
-    // TODO: Check for failure
-}
-
-static void boot_to_application(void) {
-    copy_application_vectors_to_sram();
-    syscfg_set_mem_mode(syscfg_mem_mode_sram);
-    jump_to_application_reset_handler();
-}
-
-void main(void) {
+// Setup USART2 for I/O.
+static void configure_usart2(void) {
     // Enable clocks for USART2 and the I/O port with the USART2 TX and RX pins.
     rcc_apb1_usart2_enable();
     rcc_ahb_iopa_enable();
@@ -136,42 +35,57 @@ void main(void) {
 
     // Enable USART2.
     usart_enable(usart2);
+}
 
-    // Perform bootloader logic.
+static void wait_until_usart2_transmission_complete(void) {
+    while (!usart_tranmission_complete(usart2)) {}
+}
+
+// Shutdown USART2 before booting.
+static void reset_usart2(void) {
+    usart_disable(usart2);
+    rcc_ahb_iopa_disable();
+    rcc_apb1_usart2_disable();
+}
+
+// Copy data from the update region into the application region.
+static void perform_firmware_update(void) {
+    // Refer to symbols defined in the linker script for region size & origin information.
+    extern uint32_t APPLICATION_SIZE;
+    extern uint32_t APPLICATION_ORIGIN;
+    extern uint32_t UPDATE_REGION_ORIGIN;
+
+    uint32_t source_page = (uint32_t)&UPDATE_REGION_ORIGIN;
+    uint32_t destination_page = (uint32_t)&APPLICATION_ORIGIN;
+    uint32_t byte_count = (size_t)&APPLICATION_SIZE;
+    uint32_t page_count = byte_count / flash_page_size; // round up the number of pages
+    uint32_t halfword_count = byte_count / 2;
+
+    print("[bootloader] erasing application\n");
+    bool did_erase = flash_erase_pages(destination_page, page_count);
+    if (!did_erase) {
+        print("[bootloader] ERROR: failed to erase pages in application region\n");
+    }
+
+    print("[bootloader] copying new application\n");
+    flash_copy((const uint16_t*)source_page, (uint16_t*)destination_page, halfword_count);
+
+    print("[bootloader] finished\n");
+}
+
+void main(void) {
+    configure_usart2();
+
+    print("[bootloader] started\n");
 
     bool should_update = true; // TODO
 
     if (should_update) {
-        extern uint32_t APPLICATION_SIZE;
-        extern uint32_t APPLICATION_ORIGIN;
-        extern uint32_t UPDATE_REGION_ORIGIN;
-
-        flash_unlock(FLASH_KEY1, FLASH_KEY2);
-        print("[bootloader] unlocked flash\n");
-
-        print("[bootloader] starting update...\n");
-        const uint16_t* source = (const uint16_t*)&UPDATE_REGION_ORIGIN;
-        uint16_t* destination = (uint16_t*)&APPLICATION_ORIGIN;
-        size_t count = (size_t)&APPLICATION_SIZE / 2;
-        flash_overwrite(source, destination, count);
-        print("[bootloader] update finished\n");
-
-        flash_lock();
-        print("[bootloader] locked flash\n");
+        perform_firmware_update();
     }
 
-    print("[bootloader] ready, jumping to application...\n");
-
-    // Wait until USART2 has finished transmitting.
-    while (!usart_tranmission_complete(usart2)) {}
-
-    // Turn the peripherals off before booting to the application.
-
-    usart_disable(usart2);
-    rcc_ahb_iopa_disable();
-    rcc_apb1_usart2_disable();
-
+    print("[bootloader] about to boot\n");
+    wait_until_usart2_transmission_complete();
+    reset_usart2();
     boot_to_application();
-
-    while (true) {}
 }

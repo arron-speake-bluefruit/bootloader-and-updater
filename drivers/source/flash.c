@@ -90,7 +90,7 @@ uint32_t flash_status(void) {
     return *FLASH_SR;
 }
 
-void clear_flash_status(void) {
+void flash_clear_status(void) {
     *FLASH_SR = flash_status_bit_programming_error
         | flash_status_bit_write_protect_error
         | flash_status_bit_end_of_program;

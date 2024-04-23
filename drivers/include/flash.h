@@ -57,6 +57,6 @@ typedef enum flash_status_bit {
 uint32_t flash_status(void);
 
 // Reset reported flash status.
-void clear_flash_status(void);
+void flash_clear_status(void);
 
 #endif // DRIVERS_FLASH_H

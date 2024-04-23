@@ -1,6 +1,7 @@
 project(drivers)
 
 add_library(${PROJECT_NAME} OBJECT
+    "${PROJECT_SOURCE_DIR}/source/flash_copy.c"
     "${PROJECT_SOURCE_DIR}/source/flash.c"
     "${PROJECT_SOURCE_DIR}/source/gpio.c"
     "${PROJECT_SOURCE_DIR}/source/nvic.c"

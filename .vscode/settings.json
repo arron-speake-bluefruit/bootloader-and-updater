@@ -5,13 +5,4 @@
     "cmake.configureSettings": {
         "BUILD_STANDALONE": "On"
     },
-    "files.associations": {
-        "*.inc": "c",
-        "flash.h": "c",
-        "hash_map": "c",
-        "bitset": "c",
-        "algorithm": "c",
-        "hash_set": "c",
-        "format": "c"
-    }
 }
