@@ -10,7 +10,19 @@
             "runToEntryPoint": "main",
             "servertype": "openocd",
             "configFiles": [
-                "./debug/openocd.cfg"
+                "board/stm32f0discovery.cfg"
+            ],
+        },
+        {
+            "name": "Debug Bootloader",
+            "cwd": "${workspaceFolder}",
+            "executable": "./build/bootloader/bootloader",
+            "request": "launch",
+            "type": "cortex-debug",
+            "runToEntryPoint": "main",
+            "servertype": "openocd",
+            "configFiles": [
+                "board/stm32f0discovery.cfg"
             ],
         }
     ]

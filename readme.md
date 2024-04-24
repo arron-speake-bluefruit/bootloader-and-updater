@@ -25,7 +25,7 @@ In VSCode, you should be able to use the CMake Tools extension to configure CMak
 `CMake: Configure` command. To build, do `F7` or run `CMake: Build`. This should produce a
 debug build.
 
-This produces library and executable artifacts in the build directory. You should be able to use
+This produces .elf and .bin artifacts in the build directory. You should be able to use
 either build method interchangeably.
 
 ## Programming
@@ -38,6 +38,12 @@ For example, to program a full release image:
 ./build.sh --release
 ./program.sh application
 ./program.sh bootloader
+```
+
+A binary image can be programmed to the update image region using an OpenOCD command. For example,
+to write the application binary to 0x08003000 (12KiB offset into flash), do:
+```sh
+openocd -f board/stm32f0discovery.cfg -c "program build/application/application.bin verify reset exit 0x08003000"
 ```
 
 ## Debugging
@@ -58,7 +64,10 @@ Debugging with GDB supports debugging both application and bootloader.
 
 ### Debugging with VSCode
 
-TODO
+The launch tasks 'Debug Application' and 'Debug Bootloader' are provided. Note that there do not
+trigger a build before starting the debug session.
+
+Debugging in VSCode requires the recommended `cortex-debug` extension.
 
 ## Testing
 
