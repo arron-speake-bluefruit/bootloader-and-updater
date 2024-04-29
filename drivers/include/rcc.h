@@ -40,4 +40,7 @@ void rcc_ahb_iopa_disable(void);
 // Disable the USART2 clock.
 void rcc_apb1_usart2_disable(void);
 
+// Enable TIM6 clock.
+void rcc_apb1_tim6_enable(void);
+
 #endif // DRIVERS_RCC_H
