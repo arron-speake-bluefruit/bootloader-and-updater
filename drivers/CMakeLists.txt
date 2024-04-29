@@ -8,6 +8,7 @@ add_library(${PROJECT_NAME} OBJECT
     "${PROJECT_SOURCE_DIR}/source/rcc.c"
     "${PROJECT_SOURCE_DIR}/source/scb.c"
     "${PROJECT_SOURCE_DIR}/source/syscfg.c"
+    "${PROJECT_SOURCE_DIR}/source/tim.c"
     "${PROJECT_SOURCE_DIR}/source/usart.c"
 )
 
