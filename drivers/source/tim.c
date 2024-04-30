@@ -11,7 +11,7 @@
 #define TIMx_PSC_OFFSET ((uintptr_t)0x28)
 #define TIMx_ARR_OFFSET ((uintptr_t)0x2C)
 
-// TIMx CR1 bit offsets 
+// TIMx CR1 bit offsets
 #define TIMx_CR1_CEN_BIT 0
 
 // TIMx DIER bit offsets
@@ -34,7 +34,7 @@ void tim_enable(tim_t tim) {
 
 void tim_enable_interrupt(tim_t tim) {
     volatile uint16_t* dier = get_register(tim, TIMx_DIER_OFFSET);
-    // Only defined bits in DIER are UDE for enabling DMA request and UIE for the update interval.
+    // Only defined bits in DIER are UDE for enabling DMA request and UIE for the update interrupt.
     // DMA is unimplemented, so we can always write 0. This means we can skip the read-modify steps
     // and just perform a direct write. No critical section.
     *dier = (1 << TIMx_DIER_UIE_BIT);
@@ -48,7 +48,7 @@ void tim_clear_interrupt_flag(tim_t tim) {
 
 void tim_set_prescaler(tim_t tim, uint16_t prescale) {
     volatile uint16_t* psc = get_register(tim, TIMx_PSC_OFFSET);
-    *psc = value;
+    *psc = prescale;
 }
 
 void tim_set_autoreload_value(tim_t tim, uint16_t value) {
