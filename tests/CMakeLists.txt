@@ -8,6 +8,7 @@ set(tests
     application_command_parser
     application_event_queue
     application_ringbuffer
+    application_xmodem_parser
 )
 
 # Definitions of test sources & include directories
@@ -30,6 +31,13 @@ set(application_ringbuffer_sources
     "../application/source/ringbuffer.c"
 )
 set(application_ringbuffer_includes
+    "../application/include"
+)
+
+set(application_xmodem_parser_sources
+    "../application/source/xmodem_parser.c"
+)
+set(application_xmodem_parser_includes
     "../application/include"
 )
 

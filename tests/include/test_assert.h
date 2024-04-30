@@ -25,4 +25,8 @@ void test_assert_fail(const char* file, const char* func, unsigned line, const c
         if (!(a)) { test_assert_fail(__FILE__, __func__, __LINE__, "assertion that " #a " was true failed\n"); } \
     } while (0)
 
+#define ASSERT_EQUAL_MEMORY(a, b, size) do { \
+        if (memcmp((a), (b), (size)) != 0) { test_assert_fail(__FILE__, __func__, __LINE__, "assertion (memory) " #a " == " #b " failed\n"); } \
+    } while (0)
+
 #endif // TEST_ASSERT_H

@@ -5,14 +5,16 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-// Parser potion of an XMODEM implementation. Integration with a USART or TIM peripheral is not
-// handled here. Retry-counting is not implemented (yet).
+enum {
+    xmodem_packet_data_size = 128,
+};
 
 typedef enum xmodem_status {
-    // A byte has been received, regardless of validity.
-    xmodem_status_byte_received,
+    // A byte has been pushed into the parser successfully.
+    xmodem_status_ok,
 
-    // A packet has been received, associated data points to 128 bytes of received data.
+    // The final byte of a packet has been received, and the `data` field contains valid packet
+    // contents until the next call onto the structure.
     // The callback handler should transmit an ACK.
     xmodem_status_packet_received,
 
@@ -27,16 +29,13 @@ typedef enum xmodem_status {
     xmodem_status_complete,
 } xmodem_status_t;
 
-// Callback type for when an XMODEM event occurs.
-typedef void (xmodem_callback_t)(xmodem_status_t status, const void* data);
-
 // A parser for incoming XMODEM packets.
-typedef struct xmodem {
+typedef struct xmodem_parser {
     // The packet number expected to be received.
     uint8_t expected_packet;
 
     // The byte offset into the packet expected to be received.
-    uint8_t packet_index;
+    uint8_t byte_index;
 
     // The checksum of the received data so far.
     uint8_t current_checksum;
@@ -45,19 +44,16 @@ typedef struct xmodem {
     bool done;
 
     // Buffer for storing partially received packet data.
-    uint8_t data[128];
-
-    // Called when an event occurs (see `xmodem_status_t`).
-    xmodem_callback_t callback;
-} xmodem_t;
+    uint8_t data[xmodem_packet_data_size];
+} xmodem_parser_t;
 
 // Reset an XMODEM struct to expect the
-void xmodem_reset(xmodem_t* xmodem, xmodem_callback_t callback);
+void xmodem_parser_reset(xmodem_parser_t* xmodem);
 
 // Push a newly received by from the USART onto the XMODEM parser.
-void xmodem_push(xmodem_t* xmodem, uint8_t byte);
+xmodem_status_t xmodem_parser_push(xmodem_parser_t* xmodem, uint8_t byte);
 
 // Inform the parser that a previously configured timeout has elapsed.
-void xmodem_timeout(xmodem_t* xmodem, uint8_t byte);
+void xmodem_parser_timeout(xmodem_parser_t* xmodem);
 
 #endif // APPLICATION_XMODEM_H

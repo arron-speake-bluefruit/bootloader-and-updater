@@ -6,6 +6,7 @@ add_executable("${PROJECT_NAME}"
     "${PROJECT_SOURCE_DIR}/source/main.c"
     "${PROJECT_SOURCE_DIR}/source/ringbuffer.c"
     "${PROJECT_SOURCE_DIR}/source/vector_table.c"
+    "${PROJECT_SOURCE_DIR}/source/xmodem_parser.c"
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE
