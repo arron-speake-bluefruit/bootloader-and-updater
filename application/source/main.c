@@ -6,6 +6,7 @@
 #include "vector_table.h"
 #include "command_parser.h"
 #include "ringbuffer.h"
+#include "git_version.h"
 #include <string.h>
 
 typedef struct event {
@@ -102,7 +103,9 @@ void main(void) {
     usart_enable_idle_interrupt(usart2);
 
     // Write a welcome message.
-    print("Hello, world.\n");
+    print("application started\ncommit: ");
+    print(git_version);
+    print("\n");
 
     while (true) {
         if (has_event) {

@@ -24,6 +24,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 target_link_libraries(${PROJECT_NAME}
     drivers
+    git_version
     linker_script_application
     startup
 )
