@@ -71,13 +71,8 @@ static void print(const char* message) {
 }
 
 static void tim6_global_interrupt(void) {
-    static unsigned counter = 0;
-    if (counter++ == 100000u) {
-        print("TIM7\n");
-        counter = 0;
-    }
-
     tim_clear_interrupt_flag(tim6);
+    print("tick\n");
 }
 
 void main(void) {
@@ -116,16 +111,17 @@ void main(void) {
     usart_enable_receive_interrupt(usart2);
     usart_enable_idle_interrupt(usart2);
 
-    // Enable TIM7
+    // Configure TIM6
     tim_enable_interrupt(tim6);
-    tim_set_prescaler(tim6, UINT16_MAX);
-    tim_set_autoreload_value(tim6, UINT16_MAX);
-    tim_enable(tim6);
+    tim_set_autoreload_value(tim6, 1000);
+    tim_set_prescaler(tim6, 48000);
 
     // Write a welcome message.
     print("application started\ncommit: ");
     print(git_version);
     print("\n");
+
+    tim_enable(tim6);
 
     while (true) {
         if (has_event) {

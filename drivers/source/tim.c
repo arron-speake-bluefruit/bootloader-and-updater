@@ -43,8 +43,7 @@ void tim_enable_interrupt(tim_t tim) {
 
 void tim_clear_interrupt_flag(tim_t tim) {
     volatile uint16_t* sr = get_register(tim, TIMx_SR_OFFSET);
-    // Only bit present in the register, so a direct write is used.
-    *sr = (1 << TIMx_SR_UIF_BIT);
+    *sr = 0;
 }
 
 void tim_set_prescaler(tim_t tim, uint16_t prescale) {
