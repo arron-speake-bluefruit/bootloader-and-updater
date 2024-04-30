@@ -13,6 +13,7 @@
 
 // TIMx CR1 bit offsets
 #define TIMx_CR1_CEN_BIT 0
+#define TIMx_CR1_ARPE_BIT 7
 
 // TIMx DIER bit offsets
 #define TIMx_DIER_UIE_BIT 0
@@ -28,7 +29,7 @@ static inline volatile uint16_t* get_register(tim_t base, uint32_t offset) {
 void tim_enable(tim_t tim) {
     volatile uint16_t* cr1 = get_register(tim, TIMx_CR1_OFFSET);
     CRITICAL_SECTION_ENTER();
-    *cr1 |= (1 << TIMx_CR1_CEN_BIT);
+    *cr1 |= (1 << TIMx_CR1_CEN_BIT) | (1 << TIMx_CR1_ARPE_BIT);
     CRITICAL_SECTION_EXIT();
 }
 
@@ -54,4 +55,9 @@ void tim_set_prescaler(tim_t tim, uint16_t prescale) {
 void tim_set_autoreload_value(tim_t tim, uint16_t value) {
     volatile uint16_t* arr = get_register(tim, TIMx_ARR_OFFSET);
     *arr = value;
+}
+
+void tim_generate_event(tim_t tim) {
+    volatile uint16_t* egr = get_register(tim, TIMx_EGR_OFFSET);
+    *egr = 1;
 }

@@ -7,6 +7,7 @@
 #include "command_parser.h"
 #include "ringbuffer.h"
 #include "git_version.h"
+#include "tim.h"
 #include <string.h>
 
 typedef struct event {
@@ -69,6 +70,16 @@ static void print(const char* message) {
     }
 }
 
+static void tim6_global_interrupt(void) {
+    static unsigned counter = 0;
+    if (counter++ == 100000u) {
+        print("TIM7\n");
+        counter = 0;
+    }
+
+    tim_clear_interrupt_flag(tim6);
+}
+
 void main(void) {
     switch_system_clock();
 
@@ -79,6 +90,7 @@ void main(void) {
     // Enable clocks for USART2 and the I/O port with the USART2 TX and RX pins.
     rcc_apb1_usart2_enable();
     rcc_ahb_iopa_enable();
+    rcc_apb1_tim7_enable();
 
     // Configure the USART RX/TX pins to the correct alternative function.
     gpio_set_mode(gpio_a, 2, gpio_mode_alternative);
@@ -93,7 +105,9 @@ void main(void) {
     usart_set_usartdiv(usart2, usart_clock_div);
 
     vector_table_set(vector_table_index_usart2, usart2_global_interrupt);
+    vector_table_set(vector_table_index_tim6, tim6_global_interrupt);
     nvic_enable_usart2_global_interrupt();
+    nvic_enable_tim6_global_interrupt();
 
     command_parser_initialize(on_command_error, on_command_finish);
 
@@ -101,6 +115,12 @@ void main(void) {
     usart_enable(usart2);
     usart_enable_receive_interrupt(usart2);
     usart_enable_idle_interrupt(usart2);
+
+    // Enable TIM7
+    tim_enable_interrupt(tim6);
+    tim_set_prescaler(tim6, UINT16_MAX);
+    tim_set_autoreload_value(tim6, UINT16_MAX);
+    tim_enable(tim6);
 
     // Write a welcome message.
     print("application started\ncommit: ");

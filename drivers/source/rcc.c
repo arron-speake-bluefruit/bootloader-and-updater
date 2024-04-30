@@ -41,8 +41,9 @@
 #define RCC_APB2ENR_USART1EN_BIT 14
 
 // RCC APB1ENR bit names
-#define RCC_APB1ENR_USART2EN_BIT 17
 #define RCC_APB1ENR_TIM6EN_BIT 4
+#define RCC_APB1ENR_TIM7EN_BIT 5
+#define RCC_APB1ENR_USART2EN_BIT 17
 
 // RCC AHBENR bit names
 #define RCC_AHBENR_IOPAEN_BIT 17
@@ -122,5 +123,11 @@ void rcc_apb1_usart2_disable(void) {
 void rcc_apb1_tim6_enable(void) {
     CRITICAL_SECTION_ENTER();
     *RCC_APB1ENR |= ~(1 << RCC_APB1ENR_TIM6EN_BIT);
+    CRITICAL_SECTION_EXIT();
+}
+
+void rcc_apb1_tim7_enable(void) {
+    CRITICAL_SECTION_ENTER();
+    *RCC_APB1ENR |= ~(1 << RCC_APB1ENR_TIM7EN_BIT);
     CRITICAL_SECTION_EXIT();
 }

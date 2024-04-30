@@ -43,4 +43,7 @@ void rcc_apb1_usart2_disable(void);
 // Enable TIM6 clock.
 void rcc_apb1_tim6_enable(void);
 
+// Enable TIM7 clock.
+void rcc_apb1_tim7_enable(void);
+
 #endif // DRIVERS_RCC_H

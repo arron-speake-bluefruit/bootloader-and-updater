@@ -4,6 +4,7 @@
 typedef void (*vector_table_function_t)(void);
 
 typedef enum vector_table_index {
+    vector_table_index_tim6 = 33,
     vector_table_index_usart2 = 44,
 } vector_table_index_t;
 
