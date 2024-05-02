@@ -1,5 +1,5 @@
-#ifndef APPLICATION_XMODEM_H
-#define APPLICATION_XMODEM_H
+#ifndef APPLICATION_XMODEM_PARSER_H
+#define APPLICATION_XMODEM_PARSER_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -56,4 +56,4 @@ xmodem_status_t xmodem_parser_push(xmodem_parser_t* xmodem, uint8_t byte);
 // Inform the parser that a previously configured timeout has elapsed.
 void xmodem_parser_timeout(xmodem_parser_t* xmodem);
 
-#endif // APPLICATION_XMODEM_H
+#endif // APPLICATION_XMODEM_PARSER_H
