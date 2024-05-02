@@ -2,7 +2,7 @@
 #include <stddef.h>
 
 enum {
-    buffer_capacity = 4,
+    buffer_capacity = 16,
 };
 
 static event_t buffer[buffer_capacity];

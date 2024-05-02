@@ -8,33 +8,28 @@
 #include "ringbuffer.h"
 #include "git_version.h"
 #include "timers.h"
+#include "event_queue.h"
+#include "xmodem.h"
 #include <string.h>
 
-typedef struct event {
-    bool is_error;
+// static void on_command_error(command_parser_error_t error) {
+//     event.is_error = true;
+//     event.error = error;
+//     has_event = true;
+// }
 
-    union {
-        command_parser_error_t error;
-        char command[32];
-    };
-} event_t;
+// static void on_command_finish(const char* command) {
+//     size_t length = strlen(command);
+//     event.is_error = false;
+//     // TODO: There's no bounds-check here.
+//     memcpy((void*)event.command, command, length + 1);
+//     has_event = true;
+// }
 
-static volatile event_t event;
-static volatile bool has_event;
+static xmodem_t xmodem;
 
-static void on_command_error(command_parser_error_t error) {
-    event.is_error = true;
-    event.error = error;
-    has_event = true;
-}
-
-static void on_command_finish(const char* command) {
-    size_t length = strlen(command);
-    event.is_error = false;
-    // TODO: There's no bounds-check here.
-    memcpy((void*)event.command, command, length + 1);
-    has_event = true;
-}
+static uint8_t xmodem_rx_buffer[1024];
+static size_t xmodem_rx_buffer_size = 0;
 
 // Change the system clock to the PLL, from 8Mhz to 48MHz.
 static void switch_system_clock(void) {
@@ -53,14 +48,18 @@ static void usart2_global_interrupt(void) {
     if (usart_can_read(usart2)) {
         // Read interrupt.
         uint8_t byte = usart_read(usart2);
-        command_parser_push(byte);
+        event_t event = {
+            .type = event_type_usart_rx,
+            .usart = byte,
+        };
+        event_queue_push(&event);
     } else {
         // Only other enable interrupt is IDLE.
         usart_clear_idle_line(usart2);
     }
 }
 
-static void print(const char* message) {
+void print(const char* message) {
     for (const char* c = message; *c != '\0'; c++) {
         // Busy-wait until the next byte can be transmitted.
         while (!usart_transmit_register_is_empty(usart2)) {}
@@ -70,11 +69,49 @@ static void print(const char* message) {
     }
 }
 
-static void on_timer(void* userdata) {
-    (void)userdata;
+static void handle_usart_rx_event(uint8_t byte) {
+    xmodem_push(&xmodem, byte);
+}
 
-    print(".");
-    (void)timers_start(1000, on_timer, NULL);
+static void handle_usart_tx_event(uint8_t byte) {
+    while (!usart_transmit_register_is_empty(usart2)) {}
+    usart_write(usart2, byte);
+}
+
+static void handle_xmodem_packet_event(const void* data) {
+    // TODO: bounds check!
+    if (xmodem_rx_buffer_size < 1024) {
+        memcpy(&xmodem_rx_buffer[xmodem_rx_buffer_size], data, xmodem_packet_data_size);
+        xmodem_rx_buffer_size += xmodem_packet_data_size;
+    }
+}
+
+static void handle_xmodem_success_event(void) {
+    // nothing
+}
+
+void handle_xmodem_timeout_event(void) {
+    xmodem_timeout(&xmodem);
+}
+
+static void handle_event(const event_t* event) {
+    switch (event->type) {
+        case event_type_usart_rx:
+            handle_usart_rx_event(event->usart);
+            break;
+        case event_type_usart_tx:
+            handle_usart_tx_event(event->usart);
+            break;
+        case event_type_xmodem_packet:
+            handle_xmodem_packet_event(event->xmodem_packet);
+            break;
+        case event_type_xmodem_success:
+            handle_xmodem_success_event();
+            break;
+        case event_type_xmodem_timeout:
+            handle_xmodem_timeout_event();
+            break;
+    }
 }
 
 void main(void) {
@@ -103,35 +140,28 @@ void main(void) {
     vector_table_set(vector_table_index_usart2, usart2_global_interrupt);
     nvic_enable_usart2_global_interrupt();
 
-    timers_initialize();
-
-    command_parser_initialize(on_command_error, on_command_finish);
+    event_queue_initialize();
+    // command_parser_initialize(on_command_error, on_command_finish);
 
     // Enable USART2.
     usart_enable(usart2);
     usart_enable_receive_interrupt(usart2);
     usart_enable_idle_interrupt(usart2);
 
+    timers_initialize();
 
     // Write a welcome message.
     print("application started\ncommit: ");
     print(git_version);
     print("\n");
 
-    timers_start(1000, on_timer, NULL);
+    print("switching to XMODEM mode\n");
+    xmodem_start(&xmodem);
 
     while (true) {
-        if (has_event) {
-            has_event = false;
-            if (event.is_error) {
-                print("error: ");
-                print(command_parser_error_as_string(event.error));
-                print("\n");
-            } else {
-                print("command: ");
-                print((const char*)event.command);
-                print("\n");
-            }
+        event_t event;
+        if (event_queue_pop(&event)) {
+            handle_event(&event);
         }
     }
 }

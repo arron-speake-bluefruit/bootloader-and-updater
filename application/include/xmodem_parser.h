@@ -22,9 +22,6 @@ typedef enum xmodem_status {
     // The callback handler should transmit a NAK.
     xmodem_status_packet_invalid,
 
-    // The transfer failed because of a timeout / TODO
-    xmodem_status_failed,
-
     // The transfer has finished. The previous packet was the final one.
     xmodem_status_complete,
 } xmodem_status_t;
@@ -39,9 +36,6 @@ typedef struct xmodem_parser {
 
     // The checksum of the received data so far.
     uint8_t current_checksum;
-
-    // If set, the XMODEM parser won't trigger mode callbacks.
-    bool done;
 
     // Buffer for storing partially received packet data.
     uint8_t data[xmodem_packet_data_size];

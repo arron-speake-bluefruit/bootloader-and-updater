@@ -2,23 +2,16 @@
 
 enum {
     start_of_heading = (uint8_t)0x01,
-    end_of_text = (uint8_t)0x03,
+    end_of_text = (uint8_t)0x04,
 };
 
 void xmodem_parser_reset(xmodem_parser_t* xmodem) {
     xmodem->expected_packet = 1;
     xmodem->byte_index = 0;
-    xmodem->done = false;
-
-    // TODO: Send NAK
 }
 
 xmodem_status_t xmodem_parser_push(xmodem_parser_t* xmodem, uint8_t byte) {
     uint8_t index = xmodem->byte_index;
-
-    if (xmodem->done) {
-        return;
-    }
 
     if (index == 0) {
         // Expecting an SOH or EOT byte.
@@ -26,7 +19,6 @@ xmodem_status_t xmodem_parser_push(xmodem_parser_t* xmodem, uint8_t byte) {
             xmodem->byte_index += 1;
             return xmodem_status_ok;
         } else if (byte == end_of_text) {
-            xmodem->done = true;
             return xmodem_status_complete;
         } else {
             return xmodem_status_packet_invalid;
@@ -72,9 +64,5 @@ xmodem_status_t xmodem_parser_push(xmodem_parser_t* xmodem, uint8_t byte) {
 }
 
 void xmodem_parser_timeout(xmodem_parser_t* xmodem) {
-    if (xmodem->done) {
-        return;
-    }
-
     xmodem->byte_index = 0;
 }
