@@ -13,6 +13,7 @@
 
 // TIMx CR1 bit offsets
 #define TIMx_CR1_CEN_BIT 0
+#define TIMx_CR1_OPM_BIT 3
 #define TIMx_CR1_ARPE_BIT 7
 
 // TIMx DIER bit offsets
@@ -26,10 +27,29 @@ static inline volatile uint16_t* get_register(tim_t base, uint32_t offset) {
     return (volatile uint16_t*)((uintptr_t)base + offset);
 }
 
+void tim_enable_autoreload_preload(tim_t tim) {
+    volatile uint16_t* cr1 = get_register(tim, TIMx_CR1_OFFSET);
+    CRITICAL_SECTION_ENTER();
+    *cr1 |= (1 << TIMx_CR1_ARPE_BIT);
+    CRITICAL_SECTION_EXIT();
+}
+
+void tim_enable_one_pulse_mode(tim_t tim) {
+    volatile uint16_t* cr1 = get_register(tim, TIMx_CR1_OFFSET);
+    CRITICAL_SECTION_ENTER();
+    *cr1 |= (1 << TIMx_CR1_OPM_BIT);
+    CRITICAL_SECTION_EXIT();
+}
+
+bool tim_is_enabled(tim_t tim) {
+    volatile uint16_t* cr1 = get_register(tim, TIMx_CR1_OFFSET);
+    return (*cr1 & (1 << TIMx_CR1_CEN_BIT)) != 0;
+}
+
 void tim_enable(tim_t tim) {
     volatile uint16_t* cr1 = get_register(tim, TIMx_CR1_OFFSET);
     CRITICAL_SECTION_ENTER();
-    *cr1 |= (1 << TIMx_CR1_CEN_BIT) | (1 << TIMx_CR1_ARPE_BIT);
+    *cr1 |= (1 << TIMx_CR1_CEN_BIT);
     CRITICAL_SECTION_EXIT();
 }
 
@@ -59,4 +79,9 @@ void tim_set_autoreload_value(tim_t tim, uint16_t value) {
 void tim_generate_event(tim_t tim) {
     volatile uint16_t* egr = get_register(tim, TIMx_EGR_OFFSET);
     *egr = 1;
+}
+
+uint16_t tim_get_counter(tim_t tim) {
+    volatile uint16_t* cnt = get_register(tim, TIMx_CNT_OFFSET);
+    return *cnt;
 }
