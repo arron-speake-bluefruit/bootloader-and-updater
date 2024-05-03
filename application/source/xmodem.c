@@ -4,7 +4,7 @@
 #include <string.h>
 
 enum {
-    timeout_ms = 7000,
+    timeout_ms = 1000,
 };
 
 static void send_nak(void) {
