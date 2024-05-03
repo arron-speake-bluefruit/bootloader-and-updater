@@ -18,32 +18,31 @@ To program and debug compiled artifacts:
 
 ## Building
 
-To build the program run `./build.sh`. The scripts accepts the flags:
-- `--release` to enable release optimizations (`-Os -DNDEBUG`), without this a debug build is made.
+To build the program run `./x.sh build`. Do `./x.sh help` for more information.
 
 In VSCode, you should be able to use the CMake Tools extension to configure CMake by running the
 `CMake: Configure` command. To build, do `F7` or run `CMake: Build`. This should produce a
 debug build.
 
-This produces .elf and .bin artifacts in the build directory. You should be able to use
+Building produces ELF and binary artifacts in the build directory. You should be able to use
 either build method interchangeably.
 
 ## Programming
 
-The `./program.sh` script accepts either `bootloader` or `application` as arguments, and programs
-them directly to their proper addresses using OpenOCD.
+The `./x.sh program` command accepts either `bootloader` or `application` as arguments, and
+programs them directly to their proper addresses using OpenOCD.
 
 For example, to program a full release image:
 ```sh
-./build.sh --release
-./program.sh application
-./program.sh bootloader
+./x.sh build --release
+./x.sh program application
+./x.sh program bootloader
 ```
 
-A binary image can be programmed to the update image region using an OpenOCD command. For example,
+A binary image can be programmed to the update image region using an x.sh command. For example,
 to write the application binary to 0x08003000 (12KiB offset into flash), do:
 ```sh
-openocd -f board/stm32f0discovery.cfg -c "program build/application/application.bin verify reset exit 0x08003000"
+./x.sh flash build/application/application.bin 0x08003000
 ```
 
 ## Debugging
@@ -54,11 +53,10 @@ Debug setup is for an STM32F0DISCOVERY board, via its ST-LINK USB port.
 
 ### Debugging with GDB
 
-After building and programming a new image, do `openocd -f board/stm32f0discovery.cfg` to connect
+After building and programming a new image, do `./x.sh openocd` to connect
 OpenOCD to the board.
 
-Then, run `arm-none-eabi-gdb -x debug/gdb.cfg` to attach the debugger. To debug the bootloader,
-do `arm-none-eabi-gdb -x debug/gdb-bootloader.cfg`
+Then, run `./x.sh gdb` to attach the debugger. To debug the bootloader, do `./x.sh gdb bootloader`
 
 Debugging with GDB supports debugging both application and bootloader.
 
@@ -74,5 +72,5 @@ Debugging in VSCode requires the recommended `cortex-debug` extension.
 A single CMake build directory is unable to handle multiple compiler toolchains at once, so the
 test project is contained inside its own CMake project with its own build directory.
 
-To build and run tests, do `./test.sh`. Passing the `--no-run` flag will only perform the build
+To build and run tests, do `./x.sh test`. Passing the `--no-run` flag will only perform the build
 step.
