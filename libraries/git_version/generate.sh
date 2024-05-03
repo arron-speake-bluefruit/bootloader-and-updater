@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # This script generates a small C source file containing a description of the current git
 # description.

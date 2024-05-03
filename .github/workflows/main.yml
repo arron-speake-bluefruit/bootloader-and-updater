@@ -1,0 +1,78 @@
+name: Test and build
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+  workflow_dispatch:
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build tests
+        run: ./x.sh test --no-run
+
+      - name: Run tests
+        run: ./x.sh test
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install gcc-arm-none-eabi
+        run: sudo apt-get install gcc-arm-none-eabi -y
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Debug build
+        run: ./x.sh build --clean
+
+      - name: Upload debug application ELF
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-debug.elf
+          path: build/application/application
+      - name: Upload debug application BIN
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-debug.bin
+          path: build/application/application.bin
+      - name: Upload debug bootloader ELF
+        uses: actions/upload-artifact@v4
+        with:
+          name: bootloader-debug.elf
+          path: build/bootloader/bootloader
+      - name: Upload debug bootloader BIN
+        uses: actions/upload-artifact@v4
+        with:
+          name: bootloader-debug.bin
+          path: build/bootloader/bootloader.bin
+
+      - name: Release build
+        run: ./x.sh build --clean --release
+
+      - name: Upload release application ELF
+        uses: actions/upload-artifact@v4
+        with:
+          name: application.elf
+          path: build/application/application
+      - name: Upload release application BIN
+        uses: actions/upload-artifact@v4
+        with:
+          name: application.bin
+          path: build/application/application.bin
+      - name: Upload release bootloader ELF
+        uses: actions/upload-artifact@v4
+        with:
+          name: bootloader.elf
+          path: build/bootloader/bootloader
+      - name: Upload release bootloader BIN
+        uses: actions/upload-artifact@v4
+        with:
+          name: bootloader.bin
+          path: build/bootloader/bootloader.bin
