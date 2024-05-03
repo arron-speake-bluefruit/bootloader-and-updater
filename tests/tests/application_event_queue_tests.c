@@ -20,7 +20,7 @@ static void can_push_and_pop_single_event(void) {
     // When
     event_t event_in = {
         .type = event_type_usart_rx,
-        .usart_rx = 'a',
+        .usart = 'a',
     };
     bool pushed = event_queue_push(&event_in);
 
@@ -34,7 +34,7 @@ static void can_push_and_pop_single_event(void) {
     // Then
     ASSERT_TRUE(popped);
     ASSERT_EQUAL(event_out.type, event_in.type);
-    ASSERT_EQUAL(event_out.usart_rx, event_in.usart_rx);
+    ASSERT_EQUAL(event_out.usart, event_in.usart);
 }
 
 static void can_pop_multiple_pushed_events_from_queue(void) {
@@ -45,15 +45,15 @@ static void can_pop_multiple_pushed_events_from_queue(void) {
     const event_t events_in[] = {
         {
             .type = event_type_usart_rx,
-            .usart_rx = 'a',
+            .usart = 'a',
         },
         {
             .type = event_type_usart_rx,
-            .usart_rx = 'b',
+            .usart = 'b',
         },
         {
             .type = event_type_usart_rx,
-            .usart_rx = 'c',
+            .usart = 'c',
         },
     };
     const size_t events_in_count = sizeof(events_in) / sizeof(events_in[0]);
@@ -70,7 +70,7 @@ static void can_pop_multiple_pushed_events_from_queue(void) {
         // Then
         ASSERT_TRUE(popped);
         ASSERT_EQUAL(event_out.type, events_in[i].type);
-        ASSERT_EQUAL(event_out.usart_rx, events_in[i].usart_rx);
+        ASSERT_EQUAL(event_out.usart, events_in[i].usart);
     }
 
     // When
@@ -84,7 +84,7 @@ static void can_pop_multiple_pushed_events_from_queue(void) {
 static void exceeding_capacity_causes_push_to_fail(void) {
     // Given
     event_queue_initialize();
-    const size_t capacity = 4; // If the internal EQ definition changes, this will need to match it
+    const size_t capacity = 16; // If the internal EQ definition changes, this will need to match it
 
     for (size_t i = 0; i < (capacity - 1); i++) {
         event_t event = {0};
