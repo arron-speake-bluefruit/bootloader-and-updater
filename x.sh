@@ -12,11 +12,19 @@ OPENOCD_BOARD_SCRIPT=board/stm32f0discovery.cfg
 
 function build_command {
     CMAKE_BUILD_TYPE=Debug
+    CLEAN_FIRST=false
 
     for ARG in "$@"; do
         case "$ARG" in
             -r | --release)
                 CMAKE_BUILD_TYPE=Release
+                ;;
+            -c | --clean)
+                CLEAN_FIRST=true
+                ;;
+            -rc | -cr) # ;]
+                CMAKE_BUILD_TYPE=Release
+                CLEAN_FIRST=true
                 ;;
             *)
                 echo "$0 build: unknown argument $ARG" >&2
@@ -24,6 +32,10 @@ function build_command {
                 ;;
         esac
     done
+
+    if $CLEAN_FIRST; then
+        clean_command
+    fi
 
     CMAKE_EXPORT_COMPILE_COMMANDS=On \
         CMAKE_TOOLCHAIN_FILE=toolchain.cmake \
@@ -86,6 +98,7 @@ function test_command {
 
 function clean_command {
     rm -rf $BUILD_DIR $TEST_BUILD_DIR
+    echo "$0 clean: removed build directories"
 }
 
 function flash_command {
@@ -136,6 +149,7 @@ function help_command {
     echo "SUBCOMMANDS & ARGUMENTS"
     echo "    'b' 'build'     Configure & build the embedded project"
     echo "                    [-r|--release]    release build instead of debug build"
+    echo "                    [-c|--clean]      clean before starting the build"
     echo
     echo "    'p' 'program'   Program previously built images onto a board"
     echo "                    <application|bootloader>    select which image to program"
