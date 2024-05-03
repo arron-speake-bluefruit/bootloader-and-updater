@@ -1,7 +1,6 @@
 project(drivers)
 
 add_library(${PROJECT_NAME} OBJECT
-    "${PROJECT_SOURCE_DIR}/source/flash_copy.c"
     "${PROJECT_SOURCE_DIR}/source/flash.c"
     "${PROJECT_SOURCE_DIR}/source/gpio.c"
     "${PROJECT_SOURCE_DIR}/source/nvic.c"
@@ -13,3 +12,4 @@ add_library(${PROJECT_NAME} OBJECT
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/include")
+target_link_libraries(${PROJECT_NAME} critical_section)
