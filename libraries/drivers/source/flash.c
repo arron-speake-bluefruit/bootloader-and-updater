@@ -1,18 +1,6 @@
 #include "flash.h"
 #include "critical_section.h"
-
-// Peripheral base address
-#define FLASH_BASE_ADDRESS ((uintptr_t)0x40022000)
-
-// Peripheral register offsets
-#define FLASH_ACR_OFFSET 0x00
-#define FLASH_KEYR_OFFSET 0x04
-#define FLASH_OPTKEYR_OFFSET 0x08
-#define FLASH_SR_OFFSET 0x0C
-#define FLASH_CR_OFFSET 0x10
-#define FLASH_AR_OFFSET 0x14
-#define FLASH_OBR_OFFSET 0x1C
-#define FLASH_WRPR_OFFSET 0x20
+#include "driver_addresses.h"
 
 // FLASH ACR bit names
 #define FLASH_ACR_PRFTBE_BIT 4

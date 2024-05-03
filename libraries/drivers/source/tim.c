@@ -1,16 +1,6 @@
 #include "tim.h"
 #include "critical_section.h"
 
-// Register offsets (TIM6 & TIM7)
-#define TIMx_CR1_OFFSET ((uintptr_t)0x00)
-#define TIMx_CR2_OFFSET ((uintptr_t)0x04)
-#define TIMx_DIER_OFFSET ((uintptr_t)0x0C)
-#define TIMx_SR_OFFSET ((uintptr_t)0x10)
-#define TIMx_EGR_OFFSET ((uintptr_t)0x14)
-#define TIMx_CNT_OFFSET ((uintptr_t)0x24)
-#define TIMx_PSC_OFFSET ((uintptr_t)0x28)
-#define TIMx_ARR_OFFSET ((uintptr_t)0x2C)
-
 // TIMx CR1 bit offsets
 #define TIMx_CR1_CEN_BIT 0
 #define TIMx_CR1_UDIS_BIT 1

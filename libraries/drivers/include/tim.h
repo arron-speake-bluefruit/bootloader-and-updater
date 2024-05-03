@@ -1,20 +1,13 @@
 #ifndef DRIVERS_TIM_H
 #define DRIVERS_TIM_H
 
-// TIM7 is not exposed, since it is not available on STM32F05 devices.
+// TIM7 is not exposed, since it is not available on STM32F05xx devices.
 
-#include <stdint.h>
+#include "driver_addresses.h"
 #include <stdbool.h>
 
 typedef enum tim {
-    // tim17 = ((uintptr_t)0x40014800),
-    // tim16 = ((uintptr_t)0x40014400),
-    // tim15 = ((uintptr_t)0x40014000),
-    // tim1 = ((uintptr_t)0x40012C00),
-    // tim14 = ((uintptr_t)0x40002000),
-    tim6 = ((uintptr_t)0x40001000),
-    // tim3 = ((uintptr_t)0x40000400),
-    // tim2 = ((uintptr_t)0x40000000),
+    tim6 = TIM6_BASE_ADDRESS,
 } tim_t;
 
 // Enable TIMx_ARR register buffering.

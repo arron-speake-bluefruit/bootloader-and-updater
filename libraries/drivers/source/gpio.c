@@ -1,19 +1,6 @@
 #include "gpio.h"
 #include "critical_section.h"
 
-// GPIO register offsets
-#define GPIOx_MODER_OFFSET ((uintptr_t)0x00)
-#define GPIOx_OTYPER_OFFSET ((uintptr_t)0x04)
-#define GPIOx_OSPEEDR_OFFSET ((uintptr_t)0x08)
-#define GPIOx_PUPDR_OFFSET ((uintptr_t)0x0C)
-#define GPIOx_IDR_OFFSET ((uintptr_t)0x10)
-#define GPIOx_ODR_OFFSET ((uintptr_t)0x14)
-#define GPIOx_BSRR_OFFSET ((uintptr_t)0x18)
-#define GPIOx_LCKR_OFFSET ((uintptr_t)0x1C)
-#define GPIOx_AFRL_OFFSET ((uintptr_t)0x20)
-#define GPIOx_AFRH_OFFSET ((uintptr_t)0x24)
-#define GPIOx_BRR_OFFSET ((uintptr_t)0x28)
-
 static volatile uint32_t* get_register(gpio_t gpio, uint32_t register_offset) {
     return (volatile uint32_t*)((uintptr_t)gpio + register_offset);
 }

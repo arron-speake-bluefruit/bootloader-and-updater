@@ -1,15 +1,6 @@
 #include "syscfg.h"
 #include "critical_section.h"
-#include <stdint.h>
-
-#define SYSCFG_BASE_ADDRESS ((uintptr_t)0x40010000)
-
-#define SYSCFG_CFGR1_OFFSET ((uintptr_t)0x00)
-#define SYSCFG_EXTICR1_OFFSET ((uintptr_t)0x08)
-#define SYSCFG_EXTICR2_OFFSET ((uintptr_t)0x0C)
-#define SYSCFG_EXTICR3_OFFSET ((uintptr_t)0x10)
-#define SYSCFG_EXTICR4_OFFSET ((uintptr_t)0x14)
-#define SYSCFG_CFGR2_OFFSET ((uintptr_t)0x18)
+#include "driver_addresses.h"
 
 #define SYSCFG_CFGR1 ((volatile uint32_t*)(SYSCFG_BASE_ADDRESS + SYSCFG_CFGR1_OFFSET))
 

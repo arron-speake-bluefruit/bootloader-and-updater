@@ -1,19 +1,19 @@
 #ifndef DRIVERS_USART_H
 #define DRIVERS_USART_H
 
+#include "driver_addresses.h"
 #include <stdbool.h>
-#include <stdint.h>
 
 // Base address selection for interacting with USART peripherals.
 typedef enum usart {
-    usart1 = ((uintptr_t)0x40013800),
-    usart2 = ((uintptr_t)0x40004400),
-    usart3 = ((uintptr_t)0x40004800),
-    usart4 = ((uintptr_t)0x40004C00),
-    usart5 = ((uintptr_t)0x40005000),
-    usart6 = ((uintptr_t)0x40011400),
-    usart7 = ((uintptr_t)0x40011800),
-    usart8 = ((uintptr_t)0x40011C00),
+    usart1 = USART1_BASE_ADDRESS,
+    usart2 = USART2_BASE_ADDRESS,
+    usart3 = USART3_BASE_ADDRESS,
+    usart4 = USART4_BASE_ADDRESS,
+    usart5 = USART5_BASE_ADDRESS,
+    usart6 = USART6_BASE_ADDRESS,
+    usart7 = USART7_BASE_ADDRESS,
+    usart8 = USART8_BASE_ADDRESS,
 } usart_t;
 
 // Set the clock divisor (`usartdiv`) for the given `usart`, for configuring its baud rate. This

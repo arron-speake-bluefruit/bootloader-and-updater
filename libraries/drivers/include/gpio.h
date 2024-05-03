@@ -1,16 +1,17 @@
 #ifndef DRIVERS_GPIO_H
 #define DRIVERS_GPIO_H
 
+#include "driver_addresses.h"
 #include <stdint.h>
 #include <stdbool.h>
 
 typedef enum gpio {
-    gpio_a = (uintptr_t)0x48000000,
-    gpio_b = (uintptr_t)0x48000400,
-    gpio_c = (uintptr_t)0x48000800,
-    gpio_d = (uintptr_t)0x48000C00,
-    gpio_e = (uintptr_t)0x48001000,
-    gpio_f = (uintptr_t)0x48001400,
+    gpio_a = GPIOA_BASE_ADDRESS,
+    gpio_b = GPIOB_BASE_ADDRESS,
+    gpio_c = GPIOC_BASE_ADDRESS,
+    gpio_d = GPIOD_BASE_ADDRESS,
+    gpio_e = GPIOE_BASE_ADDRESS,
+    gpio_f = GPIOF_BASE_ADDRESS,
 } gpio_t;
 
 typedef uint8_t gpio_pin_t;
