@@ -11,19 +11,7 @@ add_executable("${PROJECT_NAME}"
     "${PROJECT_SOURCE_DIR}/source/xmodem.c"
 )
 
-target_compile_options(${PROJECT_NAME} PRIVATE
-    "-Wall" "-Wextra" "-Wpedantic"
-)
-
-target_include_directories(${PROJECT_NAME} PRIVATE
-    "${PROJECT_SOURCE_DIR}/include"
-)
-
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    C_STANDARD 17
-    C_STANDARD_REQUIRED On
-    C_EXTENSIONS Off
-)
+target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/include")
 
 target_link_libraries(${PROJECT_NAME}
     drivers

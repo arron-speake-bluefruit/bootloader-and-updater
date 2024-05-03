@@ -1,4 +1,4 @@
-/* Common information shared between all three linker scripts. */
+/* Common information shared between both linker scripts. */
 
 STACK_SIZE = 0x1000;
 FLASH_SIZE = 0x10000;
