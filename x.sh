@@ -131,7 +131,7 @@ function help_command {
     echo "Build, debug and test tool for bootloader-and-updater project."
     echo
     echo "USAGE"
-    echo "    ./x.sh [subcommand] [...]"
+    echo "    ./x.sh <subcommand> [...]"
     echo
     echo "SUBCOMMANDS & ARGUMENTS"
     echo "    'b' 'build'     Configure & build the embedded project"
@@ -161,7 +161,9 @@ function help_command {
 # Argument parsing
 
 if [ $# -lt 1 ]; then
-    echo "$0: expected at least 1 argument (do \`./x.sh help\`)"
+    echo "$0: expected a subcommand"
+    echo
+    help_command
     exit 1
 fi
 
