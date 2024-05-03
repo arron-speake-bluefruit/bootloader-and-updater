@@ -115,11 +115,11 @@ static void handle_event(const event_t* event) {
 }
 
 void main(void) {
-    switch_system_clock();
-
-    // Configure flash.
-    flash_enable_prefetch();
+    // Enable flash read wait state BEFORE increasing system clock speed.
     flash_set_latency(flash_latency_one);
+    flash_enable_prefetch();
+
+    switch_system_clock();
 
     // Enable clocks for USART2 and the I/O port with the USART2 TX and RX pins.
     rcc_apb1_usart2_enable();
