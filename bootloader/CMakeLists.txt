@@ -10,6 +10,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/includ
 target_link_libraries(${PROJECT_NAME}
     drivers
     flash_copy
+    git_version
     startup
 )
 

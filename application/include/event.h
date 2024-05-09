@@ -29,11 +29,4 @@ typedef struct event {
     };
 } event_t;
 
-/*
-typedef struct usart_event {
-    bool is_idle;
-    uint8_t data;
-} usart_event_t;
-*/
-
 #endif // EVENT_H

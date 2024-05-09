@@ -3,6 +3,7 @@
 #include "usart.h"
 #include "flash_copy.h"
 #include "boot.h"
+#include "git_version.h"
 
 // Print all bytes of `message` into USART2 TX.
 static void print(const char* message) {
@@ -76,7 +77,9 @@ static void perform_firmware_update(void) {
 void main(void) {
     configure_usart2();
 
-    print("[bootloader] started\n");
+    print("[bootloader] started, commit: ");
+    print(git_version);
+    print("\n");
 
     bool should_update = true; // TODO
 
