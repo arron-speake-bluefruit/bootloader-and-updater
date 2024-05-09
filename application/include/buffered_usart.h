@@ -14,4 +14,7 @@ void buffered_usart_push(uint8_t byte);
 // during execution.
 void buffered_usart_write(const char* string);
 
+// Block until the USART peripheral has finished transmitting and the ringbuffer is empty.
+void buffered_usart_flush(void);
+
 #endif // BUFFERED_USART_H

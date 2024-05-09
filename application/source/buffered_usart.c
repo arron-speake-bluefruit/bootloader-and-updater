@@ -63,3 +63,13 @@ void buffered_usart_write(const char* string) {
         buffered_usart_push(*c);
     }
 }
+
+void buffered_usart_flush(void) {
+    // TODO: When a ringbuffer is added, this needs to wait for the ringbuffer to empty.
+
+    // Busy-wait until there are no more bytes to send.
+    while (!usart_transmit_register_is_empty(usart2)) {}
+
+    // Busy wait until transmission of the current byte is complete.
+    while (!usart_tranmission_complete(usart2)) {}
+}
