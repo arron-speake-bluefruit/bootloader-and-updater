@@ -15,7 +15,7 @@ static void copy_application_vectors_to_sram(void) {
     memcpy(_app_vectors, &APPLICATION_ORIGIN, vector_table_size);
 }
 
-noreturn static void jump_to_application_reset_handler(void) {
+noreturn static void jump_to_application_reset_handler(boot_report_t report) {
     extern uint32_t _app_vectors[];
 
     uint32_t stack_pointer = _app_vectors[0];
@@ -25,12 +25,14 @@ noreturn static void jump_to_application_reset_handler(void) {
     // Unfortunately, a little assembly is required for this.
     // This places `stack_pointer` into the SP register, resets the link register, and then jumps
     // to `reset_handler_vector`.
+    // The boot report is passed to the application's reset handler via r0.
     __asm__ (
         "mov sp, %0\n"
         "mov lr, %1\n"
-        "bx %2\n"
+        "mov r0, %2\n"
+        "bx %3\n"
         :
-        : "r" (stack_pointer), "r" (link_register), "r" (reset_handler_vector)
+        : "r" (stack_pointer), "r" (link_register), "r" (report), "r" (reset_handler_vector)
     );
 
     // BX instruction means control never leaves the previous __asm__ block, but the compiler
@@ -39,8 +41,8 @@ noreturn static void jump_to_application_reset_handler(void) {
     __builtin_unreachable();
 }
 
-noreturn void boot_to_application(void) {
+noreturn void boot_to_application(boot_report_t report) {
     copy_application_vectors_to_sram();
     syscfg_set_mem_mode(syscfg_mem_mode_sram);
-    jump_to_application_reset_handler();
+    jump_to_application_reset_handler(report);
 }

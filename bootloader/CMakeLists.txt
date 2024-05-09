@@ -3,6 +3,7 @@ project(bootloader)
 add_executable("${PROJECT_NAME}"
     "${PROJECT_SOURCE_DIR}/source/boot.c"
     "${PROJECT_SOURCE_DIR}/source/main.c"
+    "${PROJECT_SOURCE_DIR}/source/reset_handler.c"
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/include")

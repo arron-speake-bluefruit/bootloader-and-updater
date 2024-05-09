@@ -81,14 +81,18 @@ void main(void) {
     print(git_version);
     print("\n");
 
+    boot_report_t boot_report = boot_report_typical;
+
     bool should_update = true; // TODO
 
     if (should_update) {
+        // TODO: Check application image CRC-32 before update.
         perform_firmware_update();
+        boot_report = boot_report_updated;
     }
 
     print("[bootloader] about to boot\n");
     wait_until_usart2_transmission_complete();
     reset_usart2();
-    boot_to_application();
+    boot_to_application(boot_report);
 }

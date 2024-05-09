@@ -5,6 +5,7 @@
 #include "rcc.h"
 #include "timers.h"
 #include "xmodem.h"
+#include "boot_report.h"
 #include <string.h>
 
 static xmodem_t xmodem;
@@ -68,7 +69,27 @@ static void handle_event(const event_t* event) {
     }
 }
 
-void main(void) {
+static const char* get_boot_report_string(boot_report_t boot_report) {
+    switch (boot_report) {
+        case boot_report_typical:
+            return "typical boot";
+        case boot_report_updated:
+            return "an update was successful";
+        case boot_report_failed:
+            return "an update was attempted, but failed";
+    }
+    return "?";
+}
+
+static void show_boot_report(boot_report_t boot_report) {
+    const char* string = get_boot_report_string(boot_report);
+
+    buffered_usart_write("boot report: ");
+    buffered_usart_write(string);
+    buffered_usart_write("\n");
+}
+
+void main(boot_report_t boot_report) {
     // Enable flash read wait state BEFORE increasing system clock speed.
     flash_set_latency(flash_latency_one);
     flash_enable_prefetch();
@@ -87,6 +108,8 @@ void main(void) {
     buffered_usart_write("application started\ncommit: ");
     buffered_usart_write(git_version);
     buffered_usart_write("\n");
+
+    show_boot_report(boot_report);
 
     buffered_usart_write("switching to XMODEM mode\n");
     xmodem_start(&xmodem);

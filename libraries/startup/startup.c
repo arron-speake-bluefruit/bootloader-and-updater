@@ -1,14 +1,11 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-extern uint32_t _etext;
-extern uint32_t _sbss;
-extern uint32_t _ebss;
-extern uint32_t _sdata;
-extern uint32_t _edata;
 extern uint32_t _estack;
 
-extern void main(void);
+// The bootloader and application's reset handler are different, so these are provided in the
+// executable projects directly.
+extern void reset_handler(void);
 
 void nmi_handler(void) {
     while (true) { }
@@ -28,27 +25,6 @@ void busfault_handler(void) {
 
 void usagefault_handler(void) {
     while (true) { }
-}
-
-void reset_handler(void) {
-    // Copy data init values from text
-    uint32_t *init_values_ptr = &_etext;
-    uint32_t *data_ptr = &_sdata;
-    while (data_ptr < &_edata) {
-        *data_ptr = *init_values_ptr;
-        data_ptr++;
-        init_values_ptr++;
-    }
-
-    // Zero out the BSS.
-    for (uint32_t* p = &_sbss; p < &_ebss; p++) {
-        *p = 0;
-    }
-
-    main();
-
-    // Returned from main, pretend we hardfault'd.
-    hardfault_handler();
 }
 
 __attribute__ ((section(".vectors")))
