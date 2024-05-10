@@ -97,10 +97,16 @@ static void command_xmodem(void) {
 }
 
 static void command_update_status(void) {
-    if (update_handler_is_update_available()) {
-        buffered_usart_write("update available\n");
-    } else {
-        buffered_usart_write("update not available\n");
+    switch (update_handler_get_status()) {
+        case update_handler_status_none:
+            buffered_usart_write("update status: no update ready\n");
+            break;
+        case update_handler_status_ready:
+            buffered_usart_write("update status: update ready\n");
+            break;
+        case update_handler_status_error:
+            buffered_usart_write("update status: no update ready, last download failed\n");
+            break;
     }
 }
 
