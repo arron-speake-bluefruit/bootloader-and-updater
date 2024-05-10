@@ -92,7 +92,10 @@ static void command_reset(void) {
 
 static void command_xmodem(void) {
     buffered_usart_write("switching to XMODEM mode\n");
+    buffered_usart_flush();
+
     is_xmodem_mode = true;
+    update_handler_prepare();
     xmodem_start(&xmodem);
 }
 

@@ -8,7 +8,6 @@ extern uint32_t UPDATE_REGION_ORIGIN;
 
 static size_t block_index;
 static update_handler_status_t status;
-static bool found_errors;
 
 void update_handler_prepare(void) {
     uint32_t start_address = (uint32_t)&UPDATE_REGION_ORIGIN;
@@ -18,8 +17,12 @@ void update_handler_prepare(void) {
     bool success = flash_erase_pages(start_address, page_count);
 
     block_index = 0;
-    status = update_handler_status_none;
-    found_errors = !success;
+
+    if (success) {
+        status = update_handler_status_none;
+    } else {
+        status = update_handler_status_error;
+    }
 }
 
 void update_handler_push_block(const void* block) {
@@ -36,7 +39,7 @@ void update_handler_push_block(const void* block) {
     bool success = flash_copy(block, destination, size_in_halfwords);
 
     if (!success) {
-        found_errors = true;
+        status = update_handler_status_error;
     }
 }
 
@@ -46,7 +49,9 @@ void update_handler_finish(void) {
     // - verify an image checksum
     // - verify all expected block have been written
 
-    status = found_errors ? update_handler_status_error : update_handler_status_ready;
+    if (status != update_handler_status_error) {
+        status = update_handler_status_ready;
+    }
 }
 
 update_handler_status_t update_handler_get_status(void) {
