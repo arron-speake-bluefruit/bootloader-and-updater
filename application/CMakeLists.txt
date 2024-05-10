@@ -8,6 +8,7 @@ add_executable("${PROJECT_NAME}"
     "${PROJECT_SOURCE_DIR}/source/reset_handler.c"
     "${PROJECT_SOURCE_DIR}/source/ringbuffer.c"
     "${PROJECT_SOURCE_DIR}/source/timers.c"
+    "${PROJECT_SOURCE_DIR}/source/update_handler.c"
     "${PROJECT_SOURCE_DIR}/source/vector_table.c"
     "${PROJECT_SOURCE_DIR}/source/xmodem_parser.c"
     "${PROJECT_SOURCE_DIR}/source/xmodem.c"
@@ -17,6 +18,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/includ
 
 target_link_libraries(${PROJECT_NAME}
     drivers
+    flash_copy
     git_version
     startup
 )

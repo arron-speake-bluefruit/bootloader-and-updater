@@ -35,6 +35,7 @@ typedef enum event_command_t {
     event_command_boot_report,
     event_command_reset,
     event_command_xmodem,
+    event_command_update_status,
 } event_command_t;
 
 typedef struct event {
@@ -42,7 +43,8 @@ typedef struct event {
 
     union {
         uint8_t usart;
-        uint8_t xmodem_packet[xmodem_packet_data_size];
+        // alignment hack, this is passes to flash_copy, which expects aligned halfwords
+        uint8_t xmodem_packet[xmodem_packet_data_size] __attribute__(( aligned(2) ));
         event_command_t command;
         command_parser_error_t command_error;
     };

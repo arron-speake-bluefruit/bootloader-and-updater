@@ -5,16 +5,15 @@
 #include "flash.h"
 #include "git_version.h"
 #include "rcc.h"
-#include "timers.h"
-#include "xmodem.h"
 #include "scb.h"
+#include "timers.h"
+#include "update_handler.h"
+#include "xmodem.h"
 #include <string.h>
 
 static boot_report_t boot_report;
 static bool is_xmodem_mode;
 static xmodem_t xmodem;
-static uint8_t xmodem_rx_buffer[1024];
-static size_t xmodem_rx_buffer_size = 0;
 
 // Change the system clock to the PLL, from 8Mhz to 48MHz.
 static void switch_system_clock(void) {
@@ -42,15 +41,13 @@ static void handle_usart_tx_event(uint8_t byte) {
 }
 
 static void handle_xmodem_packet_event(const void* data) {
-    // TODO: bounds check!
-    if (xmodem_rx_buffer_size < 1024) {
-        memcpy(&xmodem_rx_buffer[xmodem_rx_buffer_size], data, xmodem_packet_data_size);
-        xmodem_rx_buffer_size += xmodem_packet_data_size;
-    }
+    // safe to pass, update handler block size is same as XMODEM's.
+    update_handler_push_block(data);
 }
 
 static void handle_xmodem_success_event(void) {
     is_xmodem_mode = false;
+    update_handler_finish();
 }
 
 static void handle_xmodem_timeout_event(void) {
@@ -63,6 +60,7 @@ static void command_help(void) {
     buffered_usart_write("  help - display this help string\n");
     buffered_usart_write("  reset - perform a soft reset on the device\n");
     buffered_usart_write("  xmodem - switch to XMODEM mode\n");
+    buffered_usart_write("  update-status - show whether a new image is available to update to\n");
 }
 
 static const char* get_boot_report_string(boot_report_t boot_report) {
@@ -98,6 +96,14 @@ static void command_xmodem(void) {
     xmodem_start(&xmodem);
 }
 
+static void command_update_status(void) {
+    if (update_handler_is_update_available()) {
+        buffered_usart_write("update available\n");
+    } else {
+        buffered_usart_write("update not available\n");
+    }
+}
+
 static void handle_command_event(event_command_t command) {
     switch (command) {
         case event_command_help:
@@ -111,6 +117,9 @@ static void handle_command_event(event_command_t command) {
             break;
         case event_command_xmodem:
             command_xmodem();
+            break;
+        case event_command_update_status:
+            command_update_status();
             break;
     }
 }
@@ -184,6 +193,9 @@ bool get_command_by_name(const char* name, event_command_t* command) {
         return true;
     } else if (strcmp(name, "xmodem") == 0) {
         *command = event_command_xmodem;
+        return true;
+    } else if (strcmp(name, "update-status") == 0) {
+        *command = event_command_update_status;
         return true;
     } else {
         return false;

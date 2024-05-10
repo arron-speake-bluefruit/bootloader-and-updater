@@ -59,7 +59,7 @@ static void perform_firmware_update(void) {
     uint32_t source_page = (uint32_t)&UPDATE_REGION_ORIGIN;
     uint32_t destination_page = (uint32_t)&APPLICATION_ORIGIN;
     uint32_t byte_count = (size_t)&APPLICATION_SIZE;
-    uint32_t page_count = byte_count / flash_page_size; // round up the number of pages
+    uint32_t page_count = byte_count / flash_page_size;
     uint32_t halfword_count = byte_count / 2;
 
     print("[bootloader] erasing application\n");
