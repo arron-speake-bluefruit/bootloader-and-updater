@@ -4,6 +4,7 @@
 #include "flash_copy.h"
 #include "boot.h"
 #include "git_version.h"
+#include "info_region.h"
 
 // Print all bytes of `message` into USART2 TX.
 static void print(const char* message) {
@@ -83,12 +84,16 @@ void main(void) {
 
     boot_report_t boot_report = boot_report_typical;
 
-    bool should_update = true; // TODO
+    bool should_update = info_region_get_status() == info_status_update_ready;
 
     if (should_update) {
         // TODO: Check application image CRC-32 before update.
         perform_firmware_update();
         boot_report = boot_report_updated;
+
+        info_region_set_status(info_status_no_update);
+    } else {
+        print("[bootloader] skipping update\n");
     }
 
     print("[bootloader] about to boot\n");

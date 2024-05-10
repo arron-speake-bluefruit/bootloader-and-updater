@@ -1,6 +1,7 @@
 #include "update_handler.h"
 #include "flash_copy.h"
 #include "buffered_usart.h"
+#include "info_region.h"
 
 // Symbols defined in the common linker script.
 extern uint32_t UPDATE_REGION_SIZE;
@@ -23,6 +24,8 @@ void update_handler_prepare(void) {
     } else {
         status = update_handler_status_error;
     }
+
+    info_region_set_status(info_status_no_update);
 }
 
 void update_handler_push_block(const void* block) {
@@ -50,6 +53,7 @@ void update_handler_finish(void) {
     // - verify all expected block have been written
 
     if (status != update_handler_status_error) {
+        info_region_set_status(info_status_update_ready);
         status = update_handler_status_ready;
     }
 }

@@ -20,6 +20,7 @@ target_link_libraries(${PROJECT_NAME}
     drivers
     flash_copy
     git_version
+    info_region
     startup
 )
 
