@@ -28,10 +28,12 @@ to install CMake, Git, the Arm GCC toolchain and Ninja.
 
 > On Windows, Ninja is used over Make because it handles Windows-style paths better.
 
-For building tests, run `pacman -S gcc` for native GCC.
+For building tests, run `pacman -S gcc` to install native GCC.
 
-For programming and debugging, uou can install OpenOCD and GDB by running
-`pacman -S mingw-w64-x86_64-openocd mingw-w64-x86_64-arm-none-eabi-gdb`.
+For programming and debugging, you can install OpenOCD and GDB by running
+`pacman -S mingw-w64-x86_64-openocd mingw-w64-x86_64-arm-none-eabi-gdb`. You'll also need to
+install the ST-LINK Drivers for Windows, which are provided by ST at
+`https://www.st.com/en/development-tools/stsw-link009.html`. (MyST account required for download).
 
 With the installed requirements, you should be able to use the rest of the readme like normal.
 
