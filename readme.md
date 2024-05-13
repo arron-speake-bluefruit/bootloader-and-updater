@@ -16,6 +16,25 @@ To program and debug compiled artifacts:
 - GDB (optional, part of arm-none-eabi toolchain or gdb-multiarch, for TUI debugging)
 - vscode (optional, for graphical debugging)
 
+### Installation instructions for Windows
+
+Install the MSYS2 build environment (https://www.msys2.org/), following the instruction on the website.
+
+> If you're already using MinGW-w64, you can use that instead. Just drop the `mingw-w64-x86_64-`
+> prefix when installing packages.
+
+Launch the MSYS2 MINGW terminal, run `pacman -S cmake git mingw-w64-x86_64-arm-none-eabi-gcc ninja`
+to install CMake, Git, the Arm GCC toolchain and Ninja.
+
+> On Windows, Ninja is used over Make because it handles Windows-style paths better.
+
+For building tests, run `pacman -S gcc` for native GCC.
+
+For programming and debugging, uou can install OpenOCD and GDB by running
+`pacman -S mingw-w64-x86_64-openocd mingw-w64-x86_64-arm-none-eabi-gdb`.
+
+With the installed requirements, you should be able to use the rest of the readme like normal.
+
 ## Building
 
 To build the program run `./x.sh build`. Do `./x.sh help` for more information.

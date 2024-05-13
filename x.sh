@@ -37,10 +37,22 @@ function build_command {
         clean_command
     fi
 
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        # On a Linux platform, prefer Make.
+        GENERATOR="Unix Makefiles"
+    elif command -v ninja &>/dev/null; then
+        # Assuming Windows MSYS2, prefer Ninja.
+        GENERATOR="Ninja"
+    else
+        echo "$0: build: failed to select build generator"
+        exit 1
+    fi
+
     CMAKE_EXPORT_COMPILE_COMMANDS=On \
         CMAKE_TOOLCHAIN_FILE=toolchain.cmake \
         cmake -S . -B $BUILD_DIR \
-        "-DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE"
+        "-DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE" \
+        -G"$GENERATOR"
 
     cmake --build $BUILD_DIR --parallel
 }
@@ -86,7 +98,18 @@ function test_command {
         esac
     done
 
-    cmake -S "$TEST_SOURCE_DIR" -B "$TEST_BUILD_DIR" "-DCMAKE_BUILD_TYPE=Debug"
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        # On a Linux platform, prefer Make.
+        GENERATOR="Unix Makefiles"
+    elif command -v ninja &>/dev/null; then
+        # Assuming Windows MSYS2, prefer Ninja.
+        GENERATOR="Ninja"
+    else
+        echo "$0: test: failed to select build generator"
+        exit 1
+    fi
+
+    cmake -S "$TEST_SOURCE_DIR" -B "$TEST_BUILD_DIR" "-DCMAKE_BUILD_TYPE=Debug" -G"$GENERATOR"
     cmake --build "$TEST_BUILD_DIR" --parallel
 
     if $NORUN; then
@@ -132,7 +155,18 @@ function gdb_command {
         esac
     done
 
-    arm-none-eabi-gdb \
+    if command -v arm-none-eabi-gdb &>/dev/null; then
+        GDB_PATH="arm-none-eabi-gdb"
+    elif command -v gdb-multiarch &>/dev/null; then
+        GDB_PATH="gdb-multiarch"
+    else
+        echo "$0: gdb: no suitable GDB installation"
+        exit 1
+    fi
+
+    echo "$0: gdb: using $GDB_PATH"
+
+    $GDB_PATH \
         -ex "file $DEBUG_IMAGE_PATH" \
         -ex "target extended-remote localhost:3333" \
         -ex "break reset_handler" \
