@@ -137,11 +137,11 @@ function gdb_command {
     elif command -v gdb-multiarch &>/dev/null; then
         GDB_PATH="gdb-multiarch"
     else
-        echo "$0: gdb: no suitable GDB installation"
+        echo "$0 gdb: no suitable GDB installation"
         exit 1
     fi
 
-    echo "$0: gdb: using $GDB_PATH"
+    echo "$0 gdb: using $GDB_PATH"
 
     $GDB_PATH \
         -ex "file $DEBUG_IMAGE_PATH" \
