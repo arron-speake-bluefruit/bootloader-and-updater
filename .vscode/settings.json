@@ -2,8 +2,5 @@
     "cmake.configureEnvironment": {
         "CMAKE_TOOLCHAIN_FILE": "toolchain.cmake"
     },
-    "files.associations": {
-        "*.inc": "c",
-        "flash_copy.h": "c"
-    },
+    "cortex-debug.gdbPath.windows": "gdb-multiarch", // MSYS2 uses gdb-multiarch over arm-none-eabi-gdb
 }

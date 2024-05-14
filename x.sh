@@ -37,22 +37,10 @@ function build_command {
         clean_command
     fi
 
-    if [[ "$OSTYPE" == "linux-gnu" ]]; then
-        # On a Linux platform, prefer Make.
-        GENERATOR="Unix Makefiles"
-    elif command -v ninja &>/dev/null; then
-        # Assuming Windows MSYS2, prefer Ninja.
-        GENERATOR="Ninja"
-    else
-        echo "$0: build: failed to select build generator"
-        exit 1
-    fi
-
     CMAKE_EXPORT_COMPILE_COMMANDS=On \
         CMAKE_TOOLCHAIN_FILE=toolchain.cmake \
         cmake -S . -B $BUILD_DIR \
-        "-DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE" \
-        -G"$GENERATOR"
+        -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE
 
     cmake --build $BUILD_DIR --parallel
 }
@@ -98,18 +86,7 @@ function test_command {
         esac
     done
 
-    if [[ "$OSTYPE" == "linux-gnu" ]]; then
-        # On a Linux platform, prefer Make.
-        GENERATOR="Unix Makefiles"
-    elif command -v ninja &>/dev/null; then
-        # Assuming Windows MSYS2, prefer Ninja.
-        GENERATOR="Ninja"
-    else
-        echo "$0: test: failed to select build generator"
-        exit 1
-    fi
-
-    cmake -S "$TEST_SOURCE_DIR" -B "$TEST_BUILD_DIR" "-DCMAKE_BUILD_TYPE=Debug" -G"$GENERATOR"
+    cmake -S "$TEST_SOURCE_DIR" -B "$TEST_BUILD_DIR" -DCMAKE_BUILD_TYPE=Debug
     cmake --build "$TEST_BUILD_DIR" --parallel
 
     if $NORUN; then
@@ -173,6 +150,16 @@ function gdb_command {
         -ex "monitor reset init"
 }
 
+function code_command {
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        # On a Linux platform, just run the normal command.
+        code .
+    else
+        # Assume Windows, use the expected absolute path.
+        "/c/Users/$USER/AppData/Local/Programs/Microsoft VS Code/bin/code" .
+    fi
+}
+
 function help_command {
     echo "./x.sh"
     echo "Build, debug and test tool for bootloader-and-updater project."
@@ -202,6 +189,8 @@ function help_command {
     echo "    'g' 'gdb'       Start an arm-none-eabi-gdb session."
     echo "                    [application|bootloader]    select which image to debug"
     echo "                                                default is 'application'"
+    echo
+    echo "    'd' 'code'      Launch VSCode. Only useful on Windows (see readme)."
     echo
     echo "    'h' 'help'      Display this help message"
 }
@@ -236,6 +225,9 @@ case $SUBCOMMAND in
         ;;
     o | openocd)
         openocd_command $*
+        ;;
+    d | code)
+        code_command $*
         ;;
     g | gdb)
         gdb_command $*

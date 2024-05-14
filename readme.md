@@ -23,10 +23,11 @@ Install the MSYS2 build environment (https://www.msys2.org/), following the inst
 > If you're already using MinGW-w64, you can use that instead. Just drop the `mingw-w64-x86_64-`
 > prefix when installing packages.
 
-Launch the MSYS2 MINGW terminal, run `pacman -S cmake git mingw-w64-x86_64-arm-none-eabi-gcc ninja`
-to install CMake, Git, the Arm GCC toolchain and Ninja.
-
-> On Windows, Ninja is used over Make because it handles Windows-style paths better.
+Launch the MSYS2 MINGW terminal, run
+`pacman -S git mingw-w64-x86_64-cmake mingw-w64-x86_64-arm-none-eabi-gcc`
+to install Git, CMake and the Arm GCC toolchain. The MinGW version of CMake depends on the Ninja
+build system, which will be installed automatically. If it is not included, install
+`mingw-w64-x86_64-ninja` explicitly.
 
 For building tests, run `pacman -S gcc` to install native GCC.
 
@@ -34,6 +35,9 @@ For programming and debugging, you can install OpenOCD and GDB by running
 `pacman -S mingw-w64-x86_64-openocd mingw-w64-x86_64-arm-none-eabi-gdb`. You'll also need to
 install the ST-LINK Drivers for Windows, which are provided by ST at
 `https://www.st.com/en/development-tools/stsw-link009.html`. (MyST account required for download).
+
+For VSCode to pick up the MSYS2 environment, *it has to be launched from inside the terminal*. The
+x-script provides the `./x.sh code` command to do this.
 
 With the installed requirements, you should be able to use the rest of the readme like normal.
 

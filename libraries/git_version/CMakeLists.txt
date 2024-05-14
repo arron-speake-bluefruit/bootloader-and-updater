@@ -3,7 +3,7 @@ project(git_version)
 set(SOURCE_FILE "${PROJECT_BINARY_DIR}/git_version.c")
 
 add_custom_target(git_version_source
-    COMMAND ./generate.sh "${SOURCE_FILE}"
+    COMMAND bash generate.sh "${SOURCE_FILE}"
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     BYPRODUCTS "${SOURCE_FILE}"
 )
