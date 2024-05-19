@@ -20,11 +20,13 @@
 #define RCC_CFGR_SW_MASK 0x3
 
 // RCC APB2ENR bit names
+#define RCC_APB2ENR_SPI1_BIT 12
 #define RCC_APB2ENR_USART1EN_BIT 14
 
 // RCC APB1ENR bit names
 #define RCC_APB1ENR_TIM6EN_BIT 4
 #define RCC_APB1ENR_TIM7EN_BIT 5
+#define RCC_APB1ENR_SPI2_BIT 14
 #define RCC_APB1ENR_USART2EN_BIT 17
 
 // RCC AHBENR bit names
@@ -111,5 +113,17 @@ void rcc_apb1_tim6_enable(void) {
 void rcc_apb1_tim7_enable(void) {
     CRITICAL_SECTION_ENTER();
     *RCC_APB1ENR |= ~(1 << RCC_APB1ENR_TIM7EN_BIT);
+    CRITICAL_SECTION_EXIT();
+}
+
+void rcc_apb2_spi1_enable(void) {
+    CRITICAL_SECTION_ENTER();
+    *RCC_APB2ENR |= ~(1 << RCC_APB2ENR_SPI1_BIT);
+    CRITICAL_SECTION_EXIT();
+}
+
+void rcc_apb1_spi2_enable(void) {
+    CRITICAL_SECTION_ENTER();
+    *RCC_APB1ENR |= ~(1 << RCC_APB1ENR_SPI2_BIT);
     CRITICAL_SECTION_EXIT();
 }

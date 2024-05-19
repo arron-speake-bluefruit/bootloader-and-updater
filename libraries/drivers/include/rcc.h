@@ -46,4 +46,10 @@ void rcc_apb1_tim6_enable(void);
 // Enable TIM7 clock.
 void rcc_apb1_tim7_enable(void);
 
+// Enable SPI1 clock.
+void rcc_apb2_spi1_enable(void);
+
+// Enable SPI2 clock.
+void rcc_apb1_spi2_enable(void);
+
 #endif // DRIVERS_RCC_H
