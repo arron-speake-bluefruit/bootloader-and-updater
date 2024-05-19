@@ -161,4 +161,16 @@
 #define USART_RDR_OFFSET ((uintptr_t)0x24)
 #define USART_TDR_OFFSET ((uintptr_t)0x28)
 
+// SPI peripheral registers, STM32F0xx Reference Manual Table 117
+
+#define SPIx_CR1_OFFSET ((uintptr_t)0x00)
+#define SPIx_CR2_OFFSET ((uintptr_t)0x04)
+#define SPIx_SR_OFFSET ((uintptr_t)0x08)
+#define SPIx_DR_OFFSET ((uintptr_t)0x0C)
+#define SPIx_CRCPR_OFFSET ((uintptr_t)0x10)
+#define SPIx_RXCRCR_OFFSET ((uintptr_t)0x14)
+#define SPIx_TXCRCR_OFFSET ((uintptr_t)0x18)
+#define SPIx_I2SCFGR_OFFSET ((uintptr_t)0x1C)
+#define SPIx_I2SPR_OFFSET ((uintptr_t)0x20)
+
 #endif // DRIVERS_DRIVER_ADDRESSES_H
