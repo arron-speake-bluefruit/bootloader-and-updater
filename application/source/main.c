@@ -236,11 +236,8 @@ void main(boot_report_t new_boot_report) {
     switch_system_clock();
 
     event_queue_initialize();
-
     buffered_usart_initialize();
-
     command_parser_initialize(on_command_error, on_command_finished);
-
     timers_initialize();
 
     // Write a welcome message.
