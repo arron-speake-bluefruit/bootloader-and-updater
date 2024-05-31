@@ -1,6 +1,6 @@
 /* Common information shared between both linker scripts. */
 
-STACK_SIZE = 0x1000;
+STACK_SIZE = 0x400;
 FLASH_SIZE = 0x10000;
 RAM_SIZE = 0x2000;
 RAM_ORIGIN = 0x20000000;
