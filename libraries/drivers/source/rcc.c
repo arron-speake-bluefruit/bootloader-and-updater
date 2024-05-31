@@ -31,6 +31,7 @@
 
 // RCC AHBENR bit names
 #define RCC_AHBENR_IOPAEN_BIT 17
+#define RCC_AHBENR_IOPBEN_BIT 18
 #define RCC_AHBENR_IOPCEN_BIT 19
 
 void rcc_set_pll_multiplication_factor(uint8_t pllmul) {
@@ -74,6 +75,12 @@ void rcc_ahb_iopa_enable(void) {
     CRITICAL_SECTION_EXIT();
 }
 
+void rcc_ahb_iopb_enable(void) {
+    CRITICAL_SECTION_ENTER();
+    *RCC_AHBENR |= 1 << RCC_AHBENR_IOPBEN_BIT;
+    CRITICAL_SECTION_EXIT();
+}
+
 void rcc_ahb_iopc_enable(void) {
     CRITICAL_SECTION_ENTER();
     *RCC_APB2ENR |= 1 << RCC_AHBENR_IOPCEN_BIT;
@@ -100,30 +107,30 @@ void rcc_ahb_iopa_disable(void) {
 
 void rcc_apb1_usart2_disable(void) {
     CRITICAL_SECTION_ENTER();
-    *RCC_APB1ENR |= ~(1 << RCC_APB1ENR_USART2EN_BIT);
+    *RCC_APB1ENR &= ~(1 << RCC_APB1ENR_USART2EN_BIT);
     CRITICAL_SECTION_EXIT();
 }
 
 void rcc_apb1_tim6_enable(void) {
     CRITICAL_SECTION_ENTER();
-    *RCC_APB1ENR |= ~(1 << RCC_APB1ENR_TIM6EN_BIT);
+    *RCC_APB1ENR |= 1 << RCC_APB1ENR_TIM6EN_BIT;
     CRITICAL_SECTION_EXIT();
 }
 
 void rcc_apb1_tim7_enable(void) {
     CRITICAL_SECTION_ENTER();
-    *RCC_APB1ENR |= ~(1 << RCC_APB1ENR_TIM7EN_BIT);
+    *RCC_APB1ENR |= 1 << RCC_APB1ENR_TIM7EN_BIT;
     CRITICAL_SECTION_EXIT();
 }
 
 void rcc_apb2_spi1_enable(void) {
     CRITICAL_SECTION_ENTER();
-    *RCC_APB2ENR |= ~(1 << RCC_APB2ENR_SPI1_BIT);
+    *RCC_APB2ENR |= 1 << RCC_APB2ENR_SPI1_BIT;
     CRITICAL_SECTION_EXIT();
 }
 
 void rcc_apb1_spi2_enable(void) {
     CRITICAL_SECTION_ENTER();
-    *RCC_APB1ENR |= ~(1 << RCC_APB1ENR_SPI2_BIT);
+    *RCC_APB1ENR |= 1 << RCC_APB1ENR_SPI2_BIT;
     CRITICAL_SECTION_EXIT();
 }

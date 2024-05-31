@@ -25,6 +25,9 @@ void rcc_switch_system_clock(rcc_system_clock_t clock);
 // Enable the I/O port A clock.
 void rcc_ahb_iopa_enable(void);
 
+// Enable the I/O port B clock.
+void rcc_ahb_iopb_enable(void);
+
 // Enable the I/O port C clock.
 void rcc_ahb_iopc_enable(void);
 
